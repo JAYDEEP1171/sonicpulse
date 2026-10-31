@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed": "#72fe8f",
+              "primary-container": "#1cb853",
+              "outline": "#767575",
+              "on-tertiary-fixed": "#003840",
+              "tertiary-fixed": "#0fe3ff",
+              "background": "#0e0e0e",
+              "on-primary-fixed-variant": "#006a2b",
+              "surface-container-low": "#131313",
+              "surface-container": "#1a1a1a",
+              "on-surface": "#ffffff",
+              "surface-variant": "#262626",
+              "surface-dim": "#0e0e0e",
+              "tertiary": "#88ebff",
+              "surface-container-high": "#20201f",
+              "on-background": "#ffffff",
+              "on-secondary": "#005e39",
+              "inverse-surface": "#fcf9f8",
+              "tertiary-fixed-dim": "#00d4ee",
+              "inverse-on-surface": "#565555",
+              "secondary-fixed": "#7cfbb5",
+              "on-secondary-fixed-variant": "#006940",
+              "on-primary-container": "#002a0c",
+              "surface-container-highest": "#262626",
+              "secondary": "#7cfbb5",
+              "on-surface-variant": "#adaaaa",
+              "primary-dim": "#63ef82",
+              "tertiary-container": "#0fe3ff",
+              "primary-fixed-dim": "#63ef82",
+              "outline-variant": "#484847",
+              "error": "#ff7351",
+              "on-primary-fixed": "#004a1c",
+              "on-secondary-container": "#e2ffe9",
+              "on-error-container": "#ffd2c8",
+              "on-tertiary-fixed-variant": "#005763",
+              "on-secondary-fixed": "#00492b",
+              "on-tertiary": "#005762",
+              "error-dim": "#d53d18",
+              "on-tertiary-container": "#004d58",
+              "on-primary": "#005f26",
+              "primary": "#72fe8f",
+              "secondary-dim": "#6deca8",
+              "error-container": "#b92902",
+              "on-error": "#450900",
+              "surface-tint": "#72fe8f",
+              "surface-container-lowest": "#000000",
+              "secondary-container": "#006d42",
+              "surface": "#0e0e0e",
+              "secondary-fixed-dim": "#6deca8",
+              "inverse-primary": "#006e2d",
+              "tertiary-dim": "#00d4ee",
+              "surface-bright": "#2c2c2c"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #050505;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .phone-viewport {
+            width: 375px;
+            height: 812px;
+            background-color: #0e0e0e;
+            position: relative;
+            overflow-y: auto;
+            scrollbar-width: none;
+            box-shadow: 0 0 100px rgba(114, 254, 143, 0.05);
+        }
+        .phone-viewport::-webkit-scrollbar {
+            display: none;
+        }
+        .glass-panel {
+            background: rgba(32, 32, 31, 0.7);
+            backdrop-filter: blur(20px);
+        }
+        .artist-circle {
+            aspect-ratio: 1 / 1;
+        }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(114, 254, 143, 0.15);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest font-body text-on-surface">
+<!-- Phone Container -->
+<div class="phone-viewport rounded-[3rem] border-[8px] border-surface-container-highest">
+<!-- Top App Bar (Shared Component Logic) -->
+<header class="flex justify-between items-center w-full bg-[#0E0E0E] sticky top-0 z-50 w-full top-0 px-6 py-4 no-line-rule gap-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary">
+<img alt="Jaydeep Profile" class="w-full h-auto" data-alt="Portrait of a young man with a focused expression, neon green lighting accents on his face, dark studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdGQtGFYPi6NH0mFUxsAyPmk0NriZFunToyfj2oQ5i_wXMXJvWdBdkDL3pqJiUn2kTtJdJY_XZLRXl4p_OKMKGD0FUamrvEI4gzawngDFLQqYp8gZ_AjZwPQnr9pwQ7fWNKz4XEx699PhjdeDgIymHAOEHSvsbtUlCpxgt_FOegv8WOeCbl6T0zmLtXQgpXlSbXqTqu5AyFsZBCW55J9x2iRlXjuxtFi7V0t7kcWL4T2mGQdAHjyeKjTxHXqzoiurNgz7V7tU-i_Q"/>
+</div>
+<div class="flex flex-col">
+<span class="font-headline text-[#ADAAAA] uppercase tracking-widest text-[0.6875rem]">SonicPulse</span>
+</div>
+</div>
+<button class="text-[#72FE8F] hover:opacity-80 transition-opacity scale-95 active:duration-100">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<!-- Hero Content -->
+<main class="px-6 pt-8 pb-48">
+<div class="mb-8">
+<h1 class="font-headline font-extrabold text-3xl tracking-tight text-on-surface leading-tight">
+                    Warning, <span class="text-primary">Jaydeep</span>
+</h1>
+<p class="font-body text-on-surface-variant text-sm mt-1">Ready to test your reflex?</p>
+</div>
+<!-- Search Bar -->
+<div class="relative mb-10">
+<div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant text-xl" data-icon="search">search</span>
+</div>
+<input class="w-full bg-surface-container-high border-none rounded-full py-4 pl-14 pr-6 text-on-surface font-body focus:ring-2 focus:ring-primary/30 transition-all outline-none" placeholder="Search artists or tracks..." type="text" value="the weeknd"/>
+</div>
+<!-- Artist Section Heading -->
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline font-bold text-lg tracking-wide uppercase text-on-surface-variant text-[0.75rem]">Artists Results</h2>
+<span class="w-8 h-[1px] bg-primary/30"></span>
+</div>
+<!-- Asymmetric 2x2 Artist Grid -->
+<div class="grid grid-cols-2 gap-6">
+<!-- Artist 1 -->
+<div class="flex flex-col items-center gap-4 transition-transform hover:scale-105">
+<div class="artist-circle w-full rounded-full overflow-hidden border-2 border-transparent hover:border-primary p-1 transition-colors">
+<img class="w-full h-full object-cover rounded-full grayscale hover:grayscale-0 transition-all duration-500" data-alt="Moody cinematic portrait of The Weeknd in a red suit with dramatic dark shadows and warm rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb1DeQ-1K6ZyEqKNMCe9kdsTXWQ7NTa3-Ai0FfdYVLNSAbiL0AgLPoFvMtnQ2y92qESuoiPlnK5tFSxv2vGzKfqIqXy9iWZOUOZtcam4tQbFkqvHKnfE-cAb8oSGxgYbnBicDWLHujYN6ju-raYUl1dJS0kLDsrCcTTiBEvJL8_Bh7xTFlQyhsALMBkWqGMFNF85-B040vqqncabGVw-LBSEIRiNiUCnTGMemYiliPmLPmnBTLHHIR08FmaNZTA01prvi2F1SYoM8"/>
+</div>
+<div class="text-center">
+<p class="font-headline font-bold text-sm text-on-surface">The Weeknd</p>
+<p class="font-label text-[0.65rem] text-primary uppercase tracking-tighter">Verified Artist</p>
+</div>
+</div>
+<!-- Artist 2 (Staggered Offset) -->
+<div class="flex flex-col items-center gap-4 transition-transform hover:scale-105 mt-4">
+<div class="artist-circle w-full rounded-full overflow-hidden border-2 border-transparent hover:border-primary p-1 transition-colors">
+<img class="w-full h-full object-cover rounded-full grayscale hover:grayscale-0 transition-all duration-500" data-alt="Vintage lo-fi aesthetic portrait of a singer with retro sunglasses and neon purple backlight texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBu_eFZ_YA-lY6Da1R4kEYmFugL4EaL8cw82yeC6lZYUTdssrmuhHbSfSHK0C5pGd5YDO_1IPaJ86veBXQ2xEeEg3t1g1V8DhUEzeAKCBVE4ZEVdFvhLQydIWnx9vsQPURbwtnH5Rh8jepO2mGnsrV8fvGucrl8n5um472zzNprKoQ5BPICbzo28ORpNYcoeDfCGMkcQGgkCwgRSHMqJwgtRS2gjPysXMz0zG77j_3Y_YlBt6GUP2hMewSIIuvYqRMa0oWt4VuE4V4"/>
+</div>
+<div class="text-center">
+<p class="font-headline font-bold text-sm text-on-surface">The Retro Weeknd</p>
+<p class="font-label text-[0.65rem] text-on-surface-variant uppercase tracking-tighter">Cover Artist</p>
+</div>
+</div>
+<!-- Artist 3 -->
+<div class="flex flex-col items-center gap-4 transition-transform hover:scale-105 -mt-2">
+<div class="artist-circle w-full rounded-full overflow-hidden border-2 border-transparent hover:border-primary p-1 transition-colors">
+<img class="w-full h-full object-cover rounded-full grayscale hover:grayscale-0 transition-all duration-500" data-alt="Abstract musical profile silhouette against a deep green laser light and smoky atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDettA7xts19wysPmLIFrZzwy0c67Wt64QWlMZ5dNp-orHIRgY1bF0JxW2TKjeVTFLGGXcMU7eBP1hSs9v-5dEgvVgoHta79YwOkXETtDsNXaoSra3e5uClRkteD1zH7I2pi_t9OyBH4S4b5HCrFKcxYa5guzueNGJgzFJm_c4Nf5Q95bQ1GvFjtuKuUoJTqE15xE28cbxyXBvgz2jVvMkBPLcdor7h4WuBSslaiJpwnbIwIyNbKqOa96q4XmWCSD2DEdPXrsemcgI"/>
+</div>
+<div class="text-center">
+<p class="font-headline font-bold text-sm text-on-surface">Weeknd</p>
+<p class="font-label text-[0.65rem] text-on-surface-variant uppercase tracking-tighter">Remix Project</p>
+</div>
+</div>
+<!-- Artist 4 -->
+<div class="flex flex-col items-center gap-4 transition-transform hover:scale-105 mt-2">
+<div class="artist-circle w-full rounded-full overflow-hidden border-2 border-transparent hover:border-primary p-1 transition-colors">
+<img class="w-full h-full object-cover rounded-full grayscale hover:grayscale-0 transition-all duration-500" data-alt="Gritty urban underground hip hop artist portrait with harsh flash and concrete background textures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbk2O1IGhgRDvWbWl9OHWEIZTnOK6wx_xw0IKZ2x_cCEBP7N-jQrZclrM8LnaX7slx9IL5x2rHXSHrSJKaEndi4pJc4yGtMjfyvMMS1OADBwE8WNe_H2pskXJmJDRxOxlW7JEsxI0CW6RkSuFP5JuYO--xPOX5nZ7CDiQ9sBlw283NCgOhJqXMhmVsDsN00dbnfhWkv0FE8bojoVCjUb5L6TLkLgCf6Nsw42HqXWVu3dEgNpioBI6dkM1AZfIhLn2Yc_XQS7VxufY"/>
+</div>
+<div class="text-center">
+<p class="font-headline font-bold text-sm text-on-surface">6 FEET</p>
+<p class="font-label text-[0.65rem] text-on-surface-variant uppercase tracking-tighter">Collab Unit</p>
+</div>
+</div>
+</div>
+<!-- Suggested Quiz Card (High-end UI pattern) -->
+<div class="mt-12 relative group cursor-pointer overflow-hidden rounded-xl bg-surface-container-high p-5 border border-outline-variant/10 hover:border-primary/50 transition-all">
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-9xl text-primary" data-icon="bolt">bolt</span>
+</div>
+<div class="flex justify-between items-start mb-6">
+<div class="p-2 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+</div>
+<span class="text-[0.6rem] font-bold text-on-surface-variant uppercase bg-surface-variant px-2 py-1 rounded">Daily reflex</span>
+</div>
+<h3 class="font-headline font-bold text-xl mb-1">Beat Match Challenge</h3>
+<p class="font-body text-sm text-on-surface-variant mb-4">Identify 10 songs by The Weeknd under 30 seconds.</p>
+<button class="w-full bg-primary text-on-primary font-bold py-3 rounded-lg flex items-center justify-center gap-2 scale-95 active:scale-90 transition-transform">
+                    START QUIZ
+                    <span class="material-symbols-outlined text-sm" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Shared Component Logic) -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] flex justify-around items-center h-16 z-50 bg-[#20201F]/70 backdrop-blur-xl rounded-2xl shadow-[0_0_24px_rgba(114,254,143,0.08)] tonal-depth-shift">
+<!-- Bolt -->
+<a class="flex items-center justify-center text-[#ADAAAA] p-3 hover:text-[#72FE8F] transition-colors scale-95 active:duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+</a>
+<!-- Search (Active) -->
+<a class="flex items-center justify-center bg-[#72FE8F] text-[#005F26] rounded-xl p-3 hover:text-[#72FE8F] transition-colors scale-95 active:duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</a>
+<!-- Leaderboard -->
+<a class="flex items-center justify-center text-[#ADAAAA] p-3 hover:text-[#72FE8F] transition-colors scale-95 active:duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+</a>
+<!-- Person -->
+<a class="flex items-center justify-center text-[#ADAAAA] p-3 hover:text-[#72FE8F] transition-colors scale-95 active:duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</a>
+</nav>
+</div>
+</body></html>
