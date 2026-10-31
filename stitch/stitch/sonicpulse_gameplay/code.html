@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-fixed": "#72fe8f",
+            "primary-container": "#1cb853",
+            "outline": "#767575",
+            "on-tertiary-fixed": "#003840",
+            "tertiary-fixed": "#0fe3ff",
+            "background": "#0e0e0e",
+            "on-primary-fixed-variant": "#006a2b",
+            "surface-container-low": "#131313",
+            "surface-container": "#1a1a1a",
+            "on-surface": "#ffffff",
+            "surface-variant": "#262626",
+            "surface-dim": "#0e0e0e",
+            "tertiary": "#88ebff",
+            "surface-container-high": "#20201f",
+            "on-background": "#ffffff",
+            "on-secondary": "#005e39",
+            "inverse-surface": "#fcf9f8",
+            "tertiary-fixed-dim": "#00d4ee",
+            "inverse-on-surface": "#565555",
+            "secondary-fixed": "#7cfbb5",
+            "on-secondary-fixed-variant": "#006940",
+            "on-primary-container": "#002a0c",
+            "surface-container-highest": "#262626",
+            "secondary": "#7cfbb5",
+            "on-surface-variant": "#adaaaa",
+            "primary-dim": "#63ef82",
+            "tertiary-container": "#0fe3ff",
+            "primary-fixed-dim": "#63ef82",
+            "outline-variant": "#484847",
+            "error": "#ff7351",
+            "on-primary-fixed": "#004a1c",
+            "on-secondary-container": "#e2ffe9",
+            "on-error-container": "#ffd2c8",
+            "on-tertiary-fixed-variant": "#005763",
+            "on-secondary-fixed": "#00492b",
+            "on-tertiary": "#005762",
+            "error-dim": "#d53d18",
+            "on-tertiary-container": "#004d58",
+            "on-primary": "#005f26",
+            "primary": "#72fe8f",
+            "secondary-dim": "#6deca8",
+            "error-container": "#b92902",
+            "on-error": "#450900",
+            "surface-tint": "#72fe8f",
+            "surface-container-lowest": "#000000",
+            "secondary-container": "#006d42",
+            "surface": "#0e0e0e",
+            "secondary-fixed-dim": "#6deca8",
+            "inverse-primary": "#006e2d",
+            "tertiary-dim": "#00d4ee",
+            "surface-bright": "#2c2c2c"
+          },
+          fontFamily: {
+            "headline": ["Plus Jakarta Sans"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .neon-glow-primary {
+      box-shadow: 0 0 15px rgba(114, 254, 143, 0.3);
+    }
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary selection:text-on-primary overflow-hidden">
+<!-- Main Viewport Container (9:16 aspect ratio simulation) -->
+<main class="relative mx-auto w-full max-w-[430px] h-screen bg-background flex flex-col overflow-hidden shadow-2xl">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full bg-[#0E0E0E] sticky top-0 z-50 w-full top-0 px-6 py-4 no-line-rule gap-y-4 flat-no-shadows">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden">
+<img alt="Jaydeep Profile" class="w-full h-full object-cover" data-alt="close-up portrait of a stylish young man with professional lighting and a dark cinematic background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrKzS_H-FeZSHBKJH00bc_yKPdNzeavNMOhIwanV7YrTPuTekNjKix3dnuDTGziEYcN4zzc663l94mdpwGs4EdZSuGNS-0o7pCuBzDqOHZ8J0VlrOglsTElFlYguOcQjALEeNEeQxuMNgcWAPtPBocwyT7-PXVqatOeG_DezuN61BMVVtnxU7NzazobWhKc7tbZZp3meNHvwq30dCu6xUkO_ocl7HLjHFp7ZkqelNElzp-9N3hUWuxr2nELC0G8QSznYeMcz5ovyc"/>
+</div>
+<span class="font-plus-jakarta-sans text-[#ADAAAA] uppercase tracking-widest text-[0.6875rem]">ROUND 04/10</span>
+</div>
+<div class="text-xl font-bold text-[#72FE8F] tracking-tighter">SonicPulse</div>
+<button class="text-[#ADAAAA] hover:opacity-80 transition-opacity scale-95 active:duration-100">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</header>
+<!-- Quiz Content Canvas -->
+<div class="flex-1 flex flex-col items-center justify-center px-6 pt-4 pb-24">
+<!-- Progress Indicator (Pulse Progress Bar) -->
+<div class="w-full h-1 bg-surface-variant rounded-full mb-8 overflow-hidden">
+<div class="h-full w-2/5 bg-gradient-to-r from-primary to-primary-container relative">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-primary blur-[2px]"></div>
+</div>
+</div>
+<!-- Centerpiece: Square Album Cover with Perimeter Timer -->
+<div class="relative w-full aspect-square max-w-[320px] group">
+<!-- Perimeter Timer Bar -->
+<div class="absolute -inset-1.5 rounded-xl border-[3px] border-primary-container/20"></div>
+<!-- Actual Timer Progress (Simulated with clip-path or multiple divs) -->
+<div class="absolute -inset-1.5 rounded-xl border-[3px] border-primary z-10" style="clip-path: inset(0 0 0 25%);"></div>
+<!-- Album Frame -->
+<div class="relative w-full h-full rounded-lg overflow-hidden bg-surface-container-high shadow-2xl">
+<img class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" data-alt="abstract vibrant purple and blue synthwave album art with neon geometric shapes and digital glitch textures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0ulTS9YPFXa6ojrvNY52f6MX62qm-eVWeAkBlf3Fiq1MeeCDzH5z7rAt9_nUQ2Go06FkcUV6j9TKFrQpjXYNGuWrDjPFtDjdXiYph0mXWgz_MGM1IcruOT7J5OfCFc8gUzyhxsDmw_8suQQx6EPwpoyoPQqACKE9IGY3lOF0gmxiSfO6yIecSUNxb94WiTEQMM-SoKOyOsq4aWMfk7KtAFj99KWh46GU79dxE5PJLf5yBIr3llazlu2s-J9v8ef8vOC3RkrAdl_c"/>
+<!-- Glossy Overlay -->
+<div class="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-white/10"></div>
+<!-- Floating Digital Countdown -->
+<div class="absolute top-4 right-4 bg-background/80 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 z-20">
+<span class="font-headline font-extrabold text-3xl text-primary tracking-tighter">9s</span>
+</div>
+</div>
+</div>
+<!-- Dynamic Feedback Area (Substantial Empty Space) -->
+<div class="flex-1 flex items-center justify-center w-full py-8">
+<div class="text-center">
+<h2 class="font-headline font-extrabold text-2xl text-primary tracking-tight animate-pulse">
+            ⚡️ GUESSED VERY FAST!
+          </h2>
+<p class="text-on-surface-variant text-sm mt-2 font-medium tracking-wide">STREAK: 5X MULTIPLIER</p>
+</div>
+</div>
+<!-- 2x2 Grid of Multiple Choice Buttons -->
+<div class="grid grid-cols-2 gap-4 w-full mb-4">
+<!-- Option 1 -->
+<button class="flex flex-col p-3 bg-surface-container-high rounded-xl hover:bg-surface-variant transition-all active:scale-95 group border border-transparent hover:border-primary/20 items-center justify-center text-center h-24">
+<p class="text-on-surface font-bold text-sm leading-tight line-clamp-1">Blinding Lights</p>
+<p class="text-on-surface-variant text-[0.75rem] font-medium">The Weeknd</p>
+</button>
+<!-- Option 2 (Active/Correct State Visual) -->
+<button class="flex flex-col p-3 bg-primary rounded-xl transition-all active:scale-95 group neon-glow-primary items-center justify-center text-center h-24">
+<p class="text-on-primary font-bold text-sm leading-tight line-clamp-1">Save Your Tears</p>
+<p class="text-on-primary/70 text-[0.75rem] font-medium">The Weeknd</p>
+</button>
+<!-- Option 3 -->
+<button class="flex flex-col p-3 bg-surface-container-high rounded-xl hover:bg-surface-variant transition-all active:scale-95 group border border-transparent hover:border-primary/20 items-center justify-center text-center h-24">
+<p class="text-on-surface font-bold text-sm leading-tight line-clamp-1">Starboy</p>
+<p class="text-on-surface-variant text-[0.75rem] font-medium">The Weeknd</p>
+</button>
+<!-- Option 4 -->
+<button class="flex flex-col p-3 bg-surface-container-high rounded-xl hover:bg-surface-variant transition-all active:scale-95 group border border-transparent hover:border-primary/20 items-center justify-center text-center h-24">
+<p class="text-on-surface font-bold text-sm leading-tight line-clamp-1">The Hills</p>
+<p class="text-on-surface-variant text-[0.75rem] font-medium">The Weeknd</p>
+</button>
+</div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-6 left-0 right-0 mx-auto w-[90%] flex justify-around items-center h-16 z-50 bg-[#20201F]/70 backdrop-blur-xl rounded-2xl shadow-[0_0_24px_rgba(114,254,143,0.08)]">
+<a class="flex items-center justify-center bg-[#72FE8F] text-[#005F26] rounded-xl p-3 scale-95 active:duration-150" href="#">
+<span class="material-symbols-outlined" data-weight="fill">bolt</span>
+</a>
+<a class="flex items-center justify-center text-[#ADAAAA] p-3 hover:text-[#72FE8F] transition-colors scale-95 active:duration-150" href="#">
+<span class="material-symbols-outlined">search</span>
+</a>
+<a class="flex items-center justify-center text-[#ADAAAA] p-3 hover:text-[#72FE8F] transition-colors scale-95 active:duration-150" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+</a>
+<a class="flex items-center justify-center text-[#ADAAAA] p-3 hover:text-[#72FE8F] transition-colors scale-95 active:duration-150" href="#">
+<span class="material-symbols-outlined">person</span>
+</a>
+</nav>
+</main>
+</body></html>
