@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Zap, Play, ArrowLeft } from 'lucide-react';
+import { Zap, Play, ArrowLeft, Volume2, ShieldAlert, Sparkles, Music } from 'lucide-react';
 import AudioPlayer from './AudioPlayer';
 import Timer from './Timer';
 import Report from './Report';
@@ -11,9 +11,14 @@ const Game = ({ artist, onBack }) => {
   const [tracks, setTracks] = useState([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isAudioActive, setIsAudioActive] = useState(false); // Timer only runs when audio is truly playing
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [options, setOptions] = useState([]);
+
+  // Ready Countdown State (3... 2... 1... DROP!)
+  const [countdown, setCountdown] = useState(3);
+  const [isCountingDown, setIsCountingDown] = useState(true);
 
   // Scoring State
   const [score, setScore] = useState(0);
@@ -23,13 +28,13 @@ const Game = ({ artist, onBack }) => {
   const [feedback, setFeedback] = useState({ text: null, color: null, streak: null });
   const [isGameOver, setIsGameOver] = useState(false);
 
-  // Animation / Feedback State
+  // Feedback / Selection State
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [isRoundProcessing, setIsRoundProcessing] = useState(false);
 
   const currentStreak = useRef(0);
 
-  // 1. Fetch Tracks
+  // 1. Fetch Tracks for Artist
   useEffect(() => {
     let isMounted = true;
     const fetchTracks = async () => {
@@ -42,7 +47,7 @@ const Game = ({ artist, onBack }) => {
         if (Array.isArray(data) && data.length > 0) {
           setTracks(data);
         } else {
-          setFetchError(`No playable previews found for ${artist.name}. Please try another artist.`);
+          setFetchError(`No playable previews found for ${artist.name}. Try another artist.`);
         }
       } catch (error) {
         if (!isMounted) return;
@@ -59,9 +64,32 @@ const Game = ({ artist, onBack }) => {
     };
   }, [artist]);
 
-  // 2. Set up Options for Current Round
+  // 2. 3-Second "Ready" Countdown Loop
   useEffect(() => {
-    if (loading || fetchError || tracks.length === 0) return;
+    if (loading || fetchError || tracks.length === 0 || !isCountingDown) return;
+
+    if (countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown((prev) => prev - 1);
+      }, 900);
+      return () => clearTimeout(timer);
+    } else {
+      // Countdown finished -> Start Round 1
+      setIsCountingDown(false);
+      setIsPlaying(true);
+    }
+  }, [countdown, isCountingDown, loading, fetchError, tracks]);
+
+  // Skip countdown on user tap (acts as instant audio unlock gesture)
+  const handleSkipCountdown = () => {
+    setCountdown(0);
+    setIsCountingDown(false);
+    setIsPlaying(true);
+  };
+
+  // 3. Assemble Round Options
+  useEffect(() => {
+    if (loading || fetchError || tracks.length === 0 || isCountingDown) return;
 
     if (currentTrackIndex >= TOTAL_ROUNDS || currentTrackIndex >= tracks.length) {
       setIsGameOver(true);
@@ -72,12 +100,12 @@ const Game = ({ artist, onBack }) => {
     const correctTrack = tracks[currentTrackIndex];
     const otherTracks = tracks.filter((t) => t.id !== correctTrack.id);
 
-    // Fallback decoy pool if artist has fewer than 3 other tracks
+    // Fallback pool of believable song titles if the artist catalog is small
     const fallbackDecoys = [
-      { id: 'decoy-1', name: 'Blinding Lights', artists: [{ name: artist.name }] },
-      { id: 'decoy-2', name: 'Starboy', artists: [{ name: artist.name }] },
-      { id: 'decoy-3', name: 'Midnight City', artists: [{ name: artist.name }] },
-      { id: 'decoy-4', name: 'Save Your Tears', artists: [{ name: artist.name }] },
+      { id: 'decoy-1', name: 'Midnight Shadows', artists: [{ name: artist.name }] },
+      { id: 'decoy-2', name: 'Electric Rush', artists: [{ name: artist.name }] },
+      { id: 'decoy-3', name: 'Echoes in the Dark', artists: [{ name: artist.name }] },
+      { id: 'decoy-4', name: 'After Hours Glow', artists: [{ name: artist.name }] },
     ];
 
     let wrongPool = [...otherTracks];
@@ -91,18 +119,25 @@ const Game = ({ artist, onBack }) => {
 
     setOptions(roundOptions);
     setIsPlaying(true);
+    setIsAudioActive(false); // Reset until audio confirms playback
     setRoundTime(10);
     setFeedback({ text: null, color: null, streak: null });
     setSelectedOptionId(null);
     setIsRoundProcessing(false);
-  }, [currentTrackIndex, tracks, loading, fetchError]);
+  }, [currentTrackIndex, tracks, loading, fetchError, isCountingDown]);
 
-  // 3. Handle Answer Tap
+  // Callback from AudioPlayer when audio actually starts playing
+  const handleAudioStarted = () => {
+    setIsAudioActive(true);
+  };
+
+  // 4. Handle Answer Selection
   const handleAnswer = (selectedTrack) => {
     if (isRoundProcessing) return;
     setIsRoundProcessing(true);
     setSelectedOptionId(selectedTrack.id);
     setIsPlaying(false);
+    setIsAudioActive(false);
 
     const correctTrack = tracks[currentTrackIndex];
     const isCorrect = selectedTrack.id === correctTrack.id;
@@ -120,12 +155,10 @@ const Game = ({ artist, onBack }) => {
       let roundScore = 1000 - timeTaken * 100;
       roundScore = Math.max(100, Math.floor(roundScore));
 
-      // Haptic Vibration if supported on mobile
       if (typeof navigator !== 'undefined' && navigator.vibrate) {
         navigator.vibrate(30);
       }
 
-      // Reflex Speed Multiplier
       if (timeTaken <= 1.2) {
         roundScore = Math.floor(roundScore * 1.5);
         text = 'SUPER REFLEX!';
@@ -154,7 +187,7 @@ const Game = ({ artist, onBack }) => {
       setFeedback({
         text: 'INCORRECT MISS',
         color: 'text-red-500',
-        streak: 'STREAK LOST',
+        streak: 'STREAK RESET',
       });
     }
 
@@ -162,21 +195,23 @@ const Game = ({ artist, onBack }) => {
 
     setTimeout(() => {
       setCurrentTrackIndex((prev) => prev + 1);
-    }, 1400);
+    }, 1500);
   };
 
-  // 4. Handle Time Expired
+  // 5. Handle Time Expiry
   const handleTimeUp = () => {
     if (!isGameOver && !isRoundProcessing) {
       setIsRoundProcessing(true);
+      setIsPlaying(false);
+      setIsAudioActive(false);
       currentStreak.current = 0;
       setScore((prev) => prev - 500);
-      setFeedback({ text: 'OUT OF TIME', color: 'text-red-500', streak: 'STREAK LOST' });
-      setTimeout(() => setCurrentTrackIndex((prev) => prev + 1), 1400);
+      setFeedback({ text: 'OUT OF TIME', color: 'text-red-500', streak: 'STREAK RESET' });
+      setTimeout(() => setCurrentTrackIndex((prev) => prev + 1), 1500);
     }
   };
 
-  // 5. Game Over View
+  // 6. Game Over View
   if (isGameOver) {
     const totalRoundsPlayed = Math.min(tracks.length, TOTAL_ROUNDS);
     const totalTime = reactionTimes.reduce((a, b) => a + b, 0);
@@ -193,7 +228,7 @@ const Game = ({ artist, onBack }) => {
     );
   }
 
-  // 6. Loading View
+  // 7. Loading View
   if (loading) {
     return (
       <div className="flex flex-col h-full items-center justify-center p-6 space-y-4">
@@ -201,13 +236,13 @@ const Game = ({ artist, onBack }) => {
           <Zap className="w-6 h-6 text-primary fill-primary" />
         </div>
         <div className="font-display text-primary font-bold tracking-[0.2em] text-sm uppercase animate-pulse">
-          Loading {artist.name}...
+          Syncing {artist.name}...
         </div>
       </div>
     );
   }
 
-  // 7. Error View
+  // 8. Error View
   if (fetchError) {
     return (
       <div className="flex flex-col h-full items-center justify-center p-8 space-y-6 text-center">
@@ -222,11 +257,51 @@ const Game = ({ artist, onBack }) => {
     );
   }
 
+  // 9. 3-Second "Ready" Countdown Overlay (Fix for BUG-01)
+  if (isCountingDown) {
+    return (
+      <div
+        onClick={handleSkipCountdown}
+        className="h-full flex flex-col items-center justify-center p-6 space-y-8 cursor-pointer relative z-20 select-none animate-fade-in text-center"
+      >
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+            <Music className="w-3.5 h-3.5 text-primary" />
+            <span className="text-[10px] font-black uppercase text-primary tracking-widest">
+              Audio Reflex Challenge
+            </span>
+          </div>
+          <h2 className="text-2xl font-display font-black text-white">{artist.name}</h2>
+          <p className="text-xs text-on-surface-variant uppercase tracking-widest font-semibold">
+            Tap anywhere to launch immediately
+          </p>
+        </div>
+
+        {/* Big Animated Kinetic Countdown Circle */}
+        <div className="relative w-36 h-36 rounded-full border-4 border-primary/20 flex items-center justify-center shadow-[0_0_50px_rgba(114,254,143,0.25)]">
+          <div className="absolute inset-0 rounded-full border-4 border-primary animate-ping opacity-25"></div>
+          <span className="font-display font-black text-7xl text-primary tracking-tighter drop-shadow-[0_0_20px_rgba(114,254,143,0.8)]">
+            {countdown > 0 ? countdown : 'GO!'}
+          </span>
+        </div>
+
+        <div className="flex flex-col items-center space-y-1">
+          <span className="text-xs text-primary font-bold tracking-widest uppercase animate-pulse">
+            {countdown === 0 ? 'AUDIO DROPPING...' : 'GET YOUR EARS READY'}
+          </span>
+          <span className="text-[10px] text-on-surface-variant/60 tracking-wider">
+            10 Rounds • Sub-second answers earn 5X streaks
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   const currentTrack = tracks[currentTrackIndex];
   const totalRoundsCount = Math.min(tracks.length, TOTAL_ROUNDS);
 
   return (
-    <div className="h-full flex flex-col w-full relative pt-5 pb-24 px-5 gap-5">
+    <div className="h-full flex flex-col w-full relative pt-5 pb-24 px-5 gap-4">
       {/* Top Header */}
       <div className="flex items-center justify-between z-10">
         <button
@@ -244,33 +319,50 @@ const Game = ({ artist, onBack }) => {
         </div>
       </div>
 
-      {/* Album Art & Perimeter Countdown Tracker */}
+      {/* Album Art & Perimeter Countdown Tracker (Fix for BUG-02: Anti-Cheat Shield) */}
       <div className="flex justify-center w-full z-10 px-2">
-        <div className="w-full max-w-[290px]">
+        <div className="w-full max-w-[280px]">
           <Timer
             key={currentTrackIndex}
             duration={10}
-            active={isPlaying && !isRoundProcessing}
+            active={isAudioActive && !isRoundProcessing}
             onTimeUp={handleTimeUp}
             onTick={setRoundTime}
           >
-            <img
-              key={currentTrack?.id}
-              src={currentTrack?.album?.images?.[0]?.url || artist?.images?.[0]?.url}
-              alt="Track Artwork"
-              className="w-full h-full object-cover opacity-90 transition-opacity"
-            />
-            {!isPlaying && !isRoundProcessing && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                <Play className="text-white fill-white w-10 h-10" />
-              </div>
-            )}
+            <div className="relative w-full h-full overflow-hidden bg-black flex items-center justify-center">
+              {/* Actual Album Art: Heavy frosted blur while guessing, unblurs on answer */}
+              <img
+                key={currentTrack?.id}
+                src={currentTrack?.album?.images?.[0]?.url || artist?.images?.[0]?.url}
+                alt="Track Artwork"
+                className={`w-full h-full object-cover transition-all duration-500 ${
+                  isRoundProcessing
+                    ? 'filter-none blur-0 scale-100 opacity-100'
+                    : 'filter blur-2xl scale-125 opacity-60'
+                }`}
+              />
+
+              {/* Anti-Cheat Shield Overlay during active guess */}
+              {!isRoundProcessing && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/30 backdrop-blur-sm p-4 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-surface-container-highest/80 border border-primary/30 flex items-center justify-center shadow-[0_0_25px_rgba(114,254,143,0.3)] mb-2 animate-pulse">
+                    <Music className="w-7 h-7 text-primary fill-primary/20" />
+                  </div>
+                  <span className="font-display font-black text-[11px] tracking-[0.2em] text-white uppercase drop-shadow">
+                    Audio Reflex Only
+                  </span>
+                  <span className="text-[9px] text-primary/80 font-mono tracking-widest mt-0.5">
+                    {isAudioActive ? 'PREVIEW STREAMING' : 'BUFFERING BEATS...'}
+                  </span>
+                </div>
+              )}
+            </div>
           </Timer>
         </div>
       </div>
 
       {/* Dynamic Feedback Zone */}
-      <div className="flex flex-col items-center justify-center min-h-[50px] z-10 text-center">
+      <div className="flex flex-col items-center justify-center min-h-[44px] z-10 text-center">
         {feedback.text ? (
           <div className="animate-fade-in flex flex-col items-center">
             <div className="flex items-center justify-center gap-1.5">
@@ -286,8 +378,8 @@ const Game = ({ artist, onBack }) => {
             </span>
           </div>
         ) : (
-          <span className="text-on-surface-variant/40 text-[11px] tracking-widest uppercase font-semibold">
-            Tap the correct title
+          <span className="text-on-surface-variant/50 text-[11px] tracking-widest uppercase font-semibold">
+            {isAudioActive ? 'Identify this track' : 'Syncing audio...'}
           </span>
         )}
       </div>
@@ -299,7 +391,7 @@ const Game = ({ artist, onBack }) => {
           const isCorrect = track.id === currentTrack.id;
 
           let btnClass =
-            'flex flex-col items-center justify-center text-center p-3.5 rounded-2xl transition-all duration-150 min-h-[72px] ';
+            'flex flex-col items-center justify-center text-center p-3 rounded-2xl transition-all duration-150 min-h-[70px] ';
 
           if (isRoundProcessing) {
             if (isCorrect) {
@@ -341,16 +433,17 @@ const Game = ({ artist, onBack }) => {
         })}
       </div>
 
-      {/* Audio Stream Controller */}
+      {/* Audio Stream Controller with Auto-Play & Live Sync */}
       {currentTrack && (
         <AudioPlayer
           src={currentTrack.preview_url}
           isPlaying={isPlaying}
+          onAudioStarted={handleAudioStarted}
           onEnded={() => {}}
           onError={() => {
             console.error('Audio stream failed to load:', currentTrack.preview_url);
-            // Auto credit round if audio preview URL is blocked by network
             setIsPlaying(false);
+            setIsAudioActive(false);
             setIsRoundProcessing(true);
             currentStreak.current += 1;
             setScore((prev) => prev + 800);
