@@ -187,9 +187,15 @@ const Report = ({ score, totalRounds, correctCount, avgSpeed, artist, user, onRe
           {/* Vignette Overlay for Editorial Look */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-black/30 pointer-events-none"></div>
 
-          {/* Verified Badge */}
-          <div className={`absolute bottom-3 left-3 px-2.5 py-1.5 rounded-lg font-display font-black text-[11px] tracking-widest uppercase shadow-lg ${tier.badgeBg}`}>
-            DNA VERIFIED
+          {/* Verified Badge with Player Username */}
+          <div className={`absolute bottom-3 left-3 px-2.5 py-1.5 rounded-lg font-display font-black text-[11px] tracking-wider uppercase shadow-lg flex items-center gap-1.5 ${tier.badgeBg}`}>
+            <span>DNA VERIFIED</span>
+            {user && (
+              <>
+                <span className="opacity-40">•</span>
+                <span className="font-mono text-white lowercase">@{user.username || user.name}</span>
+              </>
+            )}
           </div>
 
           {/* Score Badge */}
@@ -198,10 +204,18 @@ const Report = ({ score, totalRounds, correctCount, avgSpeed, artist, user, onRe
           </div>
         </div>
 
-        {/* Artist Name */}
-        <h2 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-white uppercase text-center mt-2.5 w-full truncate">
-          {artist.name}
-        </h2>
+        {/* Artist Name & Player Handle */}
+        <div className="text-center w-full mt-2 space-y-1">
+          <h2 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-white uppercase truncate">
+            {artist.name}
+          </h2>
+          {user && (
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container border border-white/10 shadow-sm">
+              <span className="text-[9px] text-on-surface-variant font-medium uppercase tracking-wider">Reflex By</span>
+              <span className="font-mono text-xs font-black text-primary">@{user.username || user.name}</span>
+            </div>
+          )}
+        </div>
 
         {/* 2x2 Stats Grid with Dynamic Tier Accents */}
         <div className="grid grid-cols-2 gap-2 w-full mt-1.5 mb-1.5 px-1">
@@ -245,9 +259,9 @@ const Report = ({ score, totalRounds, correctCount, avgSpeed, artist, user, onRe
           </div>
         </div>
 
-        {/* Clean Footer Brand Watermark */}
+        {/* Clean Footer Brand Watermark with Player Handle */}
         <div className="text-[8px] sm:text-[9px] font-mono tracking-widest text-on-surface-variant/50 uppercase pb-1 text-center w-full">
-          sonicpulse.app • audio reflex platform
+          sonicpulse.app • @{user?.username || user?.name || 'player'}'s audio reflex dna
         </div>
       </div>
 
