@@ -17,7 +17,7 @@ const shuffleArray = (array) => {
   return shuffled;
 };
 
-const Game = ({ artist, onBack }) => {
+const Game = ({ artist, user, onBack }) => {
   const [allTracks, setAllTracks] = useState([]); // Full catalog pool (up to 50 tracks)
   const [tracks, setTracks] = useState([]);       // Randomized 10 tracks for active quiz
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
@@ -261,6 +261,7 @@ const Game = ({ artist, onBack }) => {
         correctCount={correctCount}
         avgSpeed={avgSpeed}
         artist={artist}
+        user={user}
         onRestart={onBack}
         onPlayAgain={handlePlayAgain}
       />

@@ -1,11 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { toPng, toBlob } from 'html-to-image';
 import { Download, Share2, Zap, ArrowLeft, Check, Crown, Flame, Award, AlertCircle, RotateCcw, Search } from 'lucide-react';
+import { recordGameScore } from '../services/supabase';
 
-const Report = ({ score, totalRounds, correctCount, avgSpeed, artist, onRestart, onPlayAgain }) => {
+const Report = ({ score, totalRounds, correctCount, avgSpeed, artist, user, onRestart, onPlayAgain }) => {
   const ref = useRef(null);
   const [sharing, setSharing] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState('');
+  const hasRecordedRef = useRef(false);
 
   // 1. Calculate Accuracy & Performance Tier
   const accuracy = totalRounds > 0 ? (correctCount / totalRounds) * 100 : 0;
@@ -53,6 +55,24 @@ const Report = ({ score, totalRounds, correctCount, avgSpeed, artist, onRestart,
       icon: Award,
     };
   }
+
+  // Automatically record score to Supabase Leaderboard
+  useEffect(() => {
+    if (hasRecordedRef.current) return;
+    hasRecordedRef.current = true;
+
+    if (user && user.id && !user.id.startsWith('guest-')) {
+      recordGameScore({
+        userId: user.id,
+        username: user.username || user.name,
+        artistName: artist.name,
+        score,
+        accuracy,
+        avgSpeed,
+        tier: tier.verdict,
+      });
+    }
+  }, [user, artist, score, accuracy, avgSpeed, tier.verdict]);
 
   const TierIcon = tier.icon;
 
