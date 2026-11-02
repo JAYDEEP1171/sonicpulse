@@ -17,8 +17,40 @@ const shuffleArray = (array) => {
   return shuffled;
 };
 
+// Smart Track Selector: Prioritizes unplayed tracks so subsequent quizzes feel 100% fresh
+const selectFreshTracks = (pool, artistKey) => {
+  if (!pool || pool.length === 0) return [];
+  if (pool.length <= TOTAL_ROUNDS) return shuffleArray(pool);
+
+  const storageKey = `sonicpulse_played_${artistKey}`;
+  let playedIds = [];
+  try {
+    playedIds = JSON.parse(sessionStorage.getItem(storageKey) || '[]');
+  } catch (e) {}
+
+  const playedSet = new Set(playedIds);
+  const unplayed = pool.filter((t) => !playedSet.has(t.id));
+  const played = pool.filter((t) => playedSet.has(t.id));
+
+  let chosen = [];
+  if (unplayed.length >= TOTAL_ROUNDS) {
+    chosen = shuffleArray(unplayed).slice(0, TOTAL_ROUNDS);
+  } else {
+    const remainderNeeded = TOTAL_ROUNDS - unplayed.length;
+    chosen = [...shuffleArray(unplayed), ...shuffleArray(played).slice(0, remainderNeeded)];
+  }
+
+  // Update session storage with recently played tracks
+  const newPlayedIds = [...chosen.map((t) => t.id), ...playedIds].slice(0, Math.max(pool.length - 5, TOTAL_ROUNDS));
+  try {
+    sessionStorage.setItem(storageKey, JSON.stringify(newPlayedIds));
+  } catch (e) {}
+
+  return shuffleArray(chosen);
+};
+
 const Game = ({ artist, user, onBack }) => {
-  const [allTracks, setAllTracks] = useState([]); // Full catalog pool (up to 50 tracks)
+  const [allTracks, setAllTracks] = useState([]); // Full catalog pool (up to 50+ tracks)
   const [tracks, setTracks] = useState([]);       // Randomized 10 tracks for active quiz
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -45,7 +77,7 @@ const Game = ({ artist, user, onBack }) => {
 
   const currentStreak = useRef(0);
 
-  // 1. Fetch Tracks for Artist or Genre & Initial Random Shuffle
+  // 1. Fetch Tracks for Artist or Genre & Select Fresh Batch
   useEffect(() => {
     let isMounted = true;
     const fetchTracks = async () => {
@@ -62,9 +94,9 @@ const Game = ({ artist, user, onBack }) => {
 
         if (Array.isArray(data) && data.length > 0) {
           setAllTracks(data);
-          // Randomize the entire track pool for this session!
-          const randomized = shuffleArray(data);
-          setTracks(randomized);
+          const artistKey = (artist.id || artist.name || 'default').toLowerCase().replace(/[^a-z0-9]/g, '_');
+          const freshTracks = selectFreshTracks(data, artistKey);
+          setTracks(freshTracks);
         } else {
           setFetchError(`No playable previews found for ${artist.name}. Try another artist or genre.`);
         }
@@ -86,8 +118,9 @@ const Game = ({ artist, user, onBack }) => {
   // Restart / Replay with a Fresh Random Batch of Songs
   const handlePlayAgain = () => {
     if (allTracks.length > 0) {
-      // Re-shuffle the 50-track pool so you never get the same 10 songs!
-      setTracks(shuffleArray(allTracks));
+      const artistKey = (artist.id || artist.name || 'default').toLowerCase().replace(/[^a-z0-9]/g, '_');
+      const freshTracks = selectFreshTracks(allTracks, artistKey);
+      setTracks(freshTracks);
     }
     setCurrentTrackIndex(0);
     setScore(0);

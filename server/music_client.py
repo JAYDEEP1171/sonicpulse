@@ -48,6 +48,30 @@ class DeezerClient:
             print(f"Deezer tracks error: {e}")
             return []
 
+    def search_tracks(self, artist_name, limit=50):
+        try:
+            url = f"https://api.deezer.com/search?q=artist:\"{urllib.parse.quote(artist_name)}\"&limit={limit}"
+            response = requests.get(url, timeout=5)
+            if response.status_code != 200:
+                return []
+            data = response.json()
+            tracks = []
+            for item in data.get('data', []):
+                if item.get('preview'):
+                    tracks.append({
+                        "id": str(item.get('id')),
+                        "name": item.get('title'),
+                        "preview_url": item.get('preview'),
+                        "album": {
+                            "images": [{"url": item.get('album', {}).get('cover_medium')}]
+                        },
+                        "artists": [{"name": item.get('artist', {}).get('name')}]
+                    })
+            return tracks
+        except Exception as e:
+            print(f"Deezer search tracks error: {e}")
+            return []
+
     def get_artist_name(self, artist_id):
         try:
             url = f"https://api.deezer.com/artist/{artist_id}"
@@ -110,6 +134,32 @@ class ITunesClient:
             print(f"iTunes tracks error: {e}")
             return []
 
+    def search_tracks(self, artist_name, limit=100):
+        try:
+            url = f"https://itunes.apple.com/search?term={urllib.parse.quote(artist_name)}&entity=song&limit={limit}"
+            response = requests.get(url, timeout=8)
+            if response.status_code != 200:
+                return []
+            data = response.json()
+            tracks = []
+            for item in data.get('results', []):
+                if item.get('wrapperType') == 'track' and item.get('previewUrl'):
+                    art_url = item.get('artworkUrl100', '')
+                    art_url = art_url.replace('100x100bb.jpg', '600x600bb.jpg')
+                    tracks.append({
+                        "id": str(item.get('trackId')),
+                        "name": item.get('trackName'),
+                        "preview_url": item.get('previewUrl'),
+                        "album": {
+                            "images": [{"url": art_url}]
+                        },
+                        "artists": [{"name": item.get('artistName')}]
+                    })
+            return tracks
+        except Exception as e:
+            print(f"iTunes search tracks error: {e}")
+            return []
+
 class MusicClient:
     def __init__(self):
         self.deezer = DeezerClient()
@@ -135,35 +185,39 @@ class MusicClient:
 
     def get_top_tracks(self, artist_id, source=None, name=None):
         print(f"[MusicClient] Fetching tracks for ID {artist_id} (Source: {source}, Name: {name})")
-        
-        # If explicitly iTunes sourced, fetch directly from iTunes
-        if source == 'itunes':
-            tracks = self.itunes.get_top_tracks(artist_id)
-            if tracks:
-                return tracks
-            return []
+        pool = []
+        artist_name = name
 
-        # 1. Try Deezer Tracks (or if unknown source assume Deezer ID)
-        if source == 'deezer' or not source:
-            tracks = self.deezer.get_top_tracks(artist_id)
-            if tracks:
-                print(f"[MusicClient] Found {len(tracks)} tracks on Deezer for ID {artist_id}")
-                return tracks
-                
-            print(f"[MusicClient] Deezer tracks empty. Attempting iTunes fallback...")
-        
-        # 2. To use iTunes fallback, we need the Artist Name
-        artist_name = name or self.deezer.get_artist_name(artist_id)
-        
+        # 1. Fetch primary tracks based on source
+        if source == 'itunes':
+            pool.extend(self.itunes.get_top_tracks(artist_id))
+        else:
+            deezer_tracks = self.deezer.get_top_tracks(artist_id)
+            pool.extend(deezer_tracks)
+            if not artist_name:
+                artist_name = self.deezer.get_artist_name(artist_id)
+
+        # 2. Expand track pool with iTunes search (gives 40-100 tracks!)
         if artist_name:
-            print(f"[MusicClient] Searching iTunes tracks for artist name: '{artist_name}'")
-            itunes_artists = self.itunes.search_artists(artist_name)
-            if itunes_artists:
-                itunes_id = itunes_artists[0]['id']
-                print(f"[MusicClient] Found iTunes Artist ID: {itunes_id}")
-                tracks = self.itunes.get_top_tracks(itunes_id)
-                if tracks:
-                    return tracks
-        
-        print(f"[MusicClient] Could not find tracks on Deezer or iTunes fallback for ID {artist_id}")
-        return []
+            print(f"[MusicClient] Expanding track pool for '{artist_name}' via iTunes...")
+            itunes_pool = self.itunes.search_tracks(artist_name, limit=60)
+            pool.extend(itunes_pool)
+
+            # Also try Deezer search if pool is still small
+            if len(pool) < 25:
+                deezer_pool = self.deezer.search_tracks(artist_name, limit=40)
+                pool.extend(deezer_pool)
+
+        # 3. Deduplicate tracks by normalized song title
+        seen_titles = set()
+        deduped = []
+        for t in pool:
+            if not t.get('preview_url') or not t.get('name'):
+                continue
+            clean_title = t['name'].lower().split('(')[0].split('-')[0].strip()
+            if clean_title and clean_title not in seen_titles:
+                seen_titles.add(clean_title)
+                deduped.append(t)
+
+        print(f"[MusicClient] Total unique preview tracks ready: {len(deduped)}")
+        return deduped

@@ -51,9 +51,14 @@ const Leaderboard = ({ onPlayArtist }) => {
       {/* Header */}
       <header className="flex justify-between items-center shrink-0">
         <div className="space-y-0.5">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-wider">
-            <Trophy size={12} />
-            <span>Artist & Genre Leaderboards</span>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-wider font-mono">
+              <Trophy size={11} />
+              <span>Artist Leaderboards</span>
+            </div>
+            <span className="text-[9px] font-mono text-white/40 uppercase">
+              • Best Run Ranked
+            </span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-display font-black text-white tracking-tight">
             Hall of <span className="text-primary">Fame</span>
