@@ -45,14 +45,19 @@ const Game = ({ artist, user, onBack }) => {
 
   const currentStreak = useRef(0);
 
-  // 1. Fetch Tracks for Artist & Initial Random Shuffle
+  // 1. Fetch Tracks for Artist or Genre & Initial Random Shuffle
   useEffect(() => {
     let isMounted = true;
     const fetchTracks = async () => {
       setLoading(true);
       setFetchError(null);
       try {
-        const data = await musicService.getArtistTracks(artist.id, artist.source, artist.name);
+        let data;
+        if (artist.isGenre) {
+          data = await musicService.getGenreTracks(artist);
+        } else {
+          data = await musicService.getArtistTracks(artist.id, artist.source, artist.name);
+        }
         if (!isMounted) return;
 
         if (Array.isArray(data) && data.length > 0) {
@@ -61,12 +66,12 @@ const Game = ({ artist, user, onBack }) => {
           const randomized = shuffleArray(data);
           setTracks(randomized);
         } else {
-          setFetchError(`No playable previews found for ${artist.name}. Try another artist.`);
+          setFetchError(`No playable previews found for ${artist.name}. Try another artist or genre.`);
         }
       } catch (error) {
         if (!isMounted) return;
         console.error('Failed to fetch tracks:', error);
-        setFetchError('Could not load artist tracks. Please check connection.');
+        setFetchError('Could not load tracks. Please check connection.');
       } finally {
         if (isMounted) setLoading(false);
       }

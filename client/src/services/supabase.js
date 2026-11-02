@@ -70,7 +70,7 @@ export const saveProfile = async ({ id, username, full_name, avatar_url }) => {
   return data;
 };
 
-// Leaderboard Helpers
+// Leaderboard Helpers (with Artist/Genre Filtering)
 export const recordGameScore = async ({
   userId,
   username,
@@ -104,13 +104,18 @@ export const recordGameScore = async ({
   }
 };
 
-export const fetchLeaderboard = async (limit = 25) => {
+export const fetchLeaderboard = async (artistFilter = null, limit = 35) => {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('leaderboard')
       .select('*')
-      .order('score', { ascending: false })
-      .limit(limit);
+      .order('score', { ascending: false });
+
+    if (artistFilter && artistFilter !== 'ALL') {
+      query = query.ilike('artist_name', `%${artistFilter.trim()}%`);
+    }
+
+    const { data, error } = await query.limit(limit);
 
     if (error) {
       console.warn('Could not fetch leaderboard:', error.message);
@@ -119,6 +124,20 @@ export const fetchLeaderboard = async (limit = 25) => {
     return data || [];
   } catch (err) {
     console.error('fetchLeaderboard exception:', err);
+    return [];
+  }
+};
+
+export const fetchLeaderboardArtists = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('leaderboard')
+      .select('artist_name')
+      .order('artist_name');
+
+    if (error || !data) return [];
+    return Array.from(new Set(data.map((d) => d.artist_name))).filter(Boolean);
+  } catch (e) {
     return [];
   }
 };
