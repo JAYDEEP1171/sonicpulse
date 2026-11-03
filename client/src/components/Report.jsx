@@ -56,21 +56,23 @@ const Report = ({ score, totalRounds, correctCount, avgSpeed, artist, user, onRe
     };
   }
 
-  // Automatically record score to Supabase Leaderboard
+  // Automatically record score to Supabase Leaderboard & Local History
   useEffect(() => {
     if (hasRecordedRef.current) return;
     hasRecordedRef.current = true;
 
-    if (user && user.id && !user.id.startsWith('guest-')) {
+    try {
       recordGameScore({
-        userId: user.id,
-        username: user.username || user.name,
-        artistName: artist.name,
-        score,
-        accuracy,
-        avgSpeed,
+        userId: user?.id,
+        username: user?.username || user?.name || 'Superfan',
+        artistName: artist?.name || 'Artist',
+        score: score || 0,
+        accuracy: Math.round(accuracy) || 0,
+        avgSpeed: avgSpeed || '0.0',
         tier: tier.verdict,
       });
+    } catch (e) {
+      console.warn('Could not record score:', e);
     }
   }, [user, artist, score, accuracy, avgSpeed, tier.verdict]);
 

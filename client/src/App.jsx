@@ -7,10 +7,11 @@ import ProfileView from './components/ProfileView';
 import Game from './components/Game';
 import Leaderboard from './components/Leaderboard';
 import Navigation from './components/Navigation';
+import ErrorBoundary from './components/ErrorBoundary';
 import { supabase, getProfile, signOut } from './services/supabase';
 import { musicService } from './services/api';
 
-function App() {
+function MainApp() {
   const [user, setUser] = useState(null);
   const [pendingGoogleUser, setPendingGoogleUser] = useState(null);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
@@ -182,6 +183,14 @@ function App() {
         )}
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <MainApp />
+    </ErrorBoundary>
   );
 }
 

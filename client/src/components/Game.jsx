@@ -160,21 +160,40 @@ const Game = ({ artist, user, onBack }) => {
     setIsPlaying(true);
   };
 
+  // Advance to next round safely and trigger game over when rounds reach end
+  const advanceToNextRound = () => {
+    setCurrentTrackIndex((prev) => {
+      const nextIndex = prev + 1;
+      const maxPlayable = Math.min(tracks.length || TOTAL_ROUNDS, TOTAL_ROUNDS);
+      if (nextIndex >= maxPlayable) {
+        setIsGameOver(true);
+        setIsPlaying(false);
+      }
+      return nextIndex;
+    });
+  };
+
   // 3. Assemble Round Options (Randomized Decoys Each Round)
   useEffect(() => {
     if (loading || fetchError || tracks.length === 0 || isCountingDown) return;
 
-    if (currentTrackIndex >= TOTAL_ROUNDS || currentTrackIndex >= tracks.length) {
+    const maxRounds = Math.min(tracks.length, TOTAL_ROUNDS);
+    if (currentTrackIndex >= maxRounds) {
       setIsGameOver(true);
       setIsPlaying(false);
       return;
     }
 
     const correctTrack = tracks[currentTrackIndex];
+    if (!correctTrack) {
+      setIsGameOver(true);
+      setIsPlaying(false);
+      return;
+    }
     
     // Pick distractors from the full pool of all tracks, excluding correct track and same-name tracks
     const otherCandidates = (allTracks.length > 0 ? allTracks : tracks).filter(
-      (t) => t.id !== correctTrack.id && t.name.toLowerCase() !== correctTrack.name.toLowerCase()
+      (t) => t && t.id !== correctTrack.id && t.name && correctTrack.name && t.name.toLowerCase() !== correctTrack.name.toLowerCase()
     );
 
     const fallbackDecoys = [
@@ -216,7 +235,7 @@ const Game = ({ artist, user, onBack }) => {
     setIsAudioActive(false);
 
     const correctTrack = tracks[currentTrackIndex];
-    const isCorrect = selectedTrack.id === correctTrack.id;
+    const isCorrect = correctTrack && selectedTrack.id === correctTrack.id;
     const timeTaken = Math.max(0.1, 10 - roundTime);
 
     let points = 0;
@@ -268,10 +287,7 @@ const Game = ({ artist, user, onBack }) => {
     }
 
     setScore((prev) => prev + points);
-
-    setTimeout(() => {
-      setCurrentTrackIndex((prev) => prev + 1);
-    }, 1500);
+    setTimeout(advanceToNextRound, 1500);
   };
 
   // 5. Handle Time Expiry
@@ -283,13 +299,18 @@ const Game = ({ artist, user, onBack }) => {
       currentStreak.current = 0;
       setScore((prev) => prev - 500);
       setFeedback({ text: 'OUT OF TIME', color: 'text-red-500', streak: 'STREAK RESET' });
-      setTimeout(() => setCurrentTrackIndex((prev) => prev + 1), 1500);
+      setTimeout(advanceToNextRound, 1500);
     }
   };
 
-  // 6. Game Over View
-  if (isGameOver) {
-    const totalRoundsPlayed = Math.min(tracks.length, TOTAL_ROUNDS);
+  // 6. Game Over View (Immediate fallback if rounds completed or currentTrack missing)
+  const totalPlayableRounds = Math.min(tracks.length || TOTAL_ROUNDS, TOTAL_ROUNDS);
+  const isFinished =
+    isGameOver ||
+    (!loading && !fetchError && tracks.length > 0 && currentTrackIndex >= totalPlayableRounds);
+
+  if (isFinished) {
+    const totalRoundsPlayed = totalPlayableRounds;
     const totalTime = reactionTimes.reduce((a, b) => a + b, 0);
     const avgSpeed = reactionTimes.length > 0 ? (totalTime / reactionTimes.length).toFixed(1) : '0.0';
     return (
@@ -376,7 +397,23 @@ const Game = ({ artist, user, onBack }) => {
   }
 
   const currentTrack = tracks[currentTrackIndex];
-  const totalRoundsCount = Math.min(tracks.length, TOTAL_ROUNDS);
+  const totalRoundsCount = Math.min(tracks.length || TOTAL_ROUNDS, TOTAL_ROUNDS);
+
+  // If currentTrack is missing, cleanly finish without throwing
+  if (!currentTrack) {
+    return (
+      <Report
+        score={score}
+        totalRounds={totalRoundsCount}
+        correctCount={correctCount}
+        avgSpeed={reactionTimes.length > 0 ? (reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length).toFixed(1) : '0.0'}
+        artist={artist}
+        user={user}
+        onRestart={onBack}
+        onPlayAgain={handlePlayAgain}
+      />
+    );
+  }
 
   return (
     <div className="h-full flex flex-col w-full relative pt-4 pb-20 px-4 sm:px-5 gap-3 sm:gap-4 overflow-hidden">
@@ -389,8 +426,8 @@ const Game = ({ artist, user, onBack }) => {
         >
           <ArrowLeft size={16} />
         </button>
-        <div className="text-center font-display font-bold tracking-widest text-[10px] sm:text-[11px] text-on-surface-variant uppercase">
-          Round {String(currentTrackIndex + 1).padStart(2, '0')}/{String(totalRoundsCount).padStart(2, '0')}
+        <div className="text-center font-display font-bold tracking-widest text-[10px] sm:text-[11px] text-on-surface-variant uppercase font-mono">
+          Round {String(Math.min(currentTrackIndex + 1, totalRoundsCount)).padStart(2, '0')}/{String(totalRoundsCount).padStart(2, '0')}
         </div>
         <div className="font-display font-black text-xs sm:text-sm text-primary tracking-wider">
           {score.toLocaleString()} <span className="text-[9px] text-white">PTS</span>
@@ -465,8 +502,9 @@ const Game = ({ artist, user, onBack }) => {
       {/* 2x2 Option Pad Grid (Responsive with Active Touch Scaling) */}
       <div className="w-full grid grid-cols-2 gap-2 sm:gap-2.5 z-10 shrink-0">
         {options.map((track) => {
+          if (!track) return null;
           const isSelected = track.id === selectedOptionId;
-          const isCorrect = track.id === currentTrack.id;
+          const isCorrect = currentTrack ? track.id === currentTrack.id : false;
 
           let btnClass =
             'flex flex-col items-center justify-center text-center p-2.5 sm:p-3 rounded-2xl transition-all duration-150 min-h-[64px] sm:min-h-[70px] ';
@@ -531,7 +569,7 @@ const Game = ({ artist, user, onBack }) => {
                 color: 'text-primary',
                 streak: 'QA PASS',
               });
-              setTimeout(() => setCurrentTrackIndex((prev) => prev + 1), 1400);
+              setTimeout(advanceToNextRound, 1400);
             }}
           />
         </div>
