@@ -1,12 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { toPng, toBlob } from 'html-to-image';
-import { Download, Share2, Zap, ArrowLeft, Check, Crown, Flame, Award, AlertCircle, RotateCcw, Search } from 'lucide-react';
+import { Download, Share2, Zap, ArrowLeft, Check, Crown, Flame, Award, AlertCircle, RotateCcw, Search, MessageSquareHeart } from 'lucide-react';
 import { recordGameScore } from '../services/supabase';
+import FeedbackModal from './FeedbackModal';
 
 const Report = ({ score, totalRounds, correctCount, avgSpeed, artist, user, onRestart, onPlayAgain }) => {
   const ref = useRef(null);
   const [sharing, setSharing] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState('');
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const hasRecordedRef = useRef(false);
 
   // 1. Calculate Accuracy & Performance Tier
@@ -326,7 +328,24 @@ const Report = ({ score, totalRounds, correctCount, avgSpeed, artist, user, onRe
             <Download className="w-4 h-4" />
           </button>
         </div>
+
+        {/* Post-Game Quick Feedback Button */}
+        <button
+          onClick={() => setFeedbackModalOpen(true)}
+          className="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all flex items-center justify-center gap-1.5 text-[11px] font-medium border border-white/5 cursor-pointer"
+        >
+          <MessageSquareHeart size={13} className="text-primary" />
+          <span>Have an idea or want to request an artist? Tell us</span>
+        </button>
       </div>
+
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isOpen={feedbackModalOpen}
+        onClose={() => setFeedbackModalOpen(false)}
+        user={user}
+        defaultCategory="artist_request"
+      />
     </div>
   );
 };

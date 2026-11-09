@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, History, Trophy, Zap, Target, Clock, RotateCcw, LogOut, Music, TrendingUp, Sparkles, Award } from 'lucide-react';
+import { ShieldCheck, History, Trophy, Zap, Target, Clock, RotateCcw, LogOut, Music, TrendingUp, Sparkles, Award, MessageSquare } from 'lucide-react';
 import { fetchUserHistory } from '../services/supabase';
+import FeedbackModal from './FeedbackModal';
 
 const ProfileView = ({ user, onLogout, onReplayArtist }) => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -63,13 +65,24 @@ const ProfileView = ({ user, onLogout, onReplayArtist }) => {
           </h2>
         </div>
 
-        <button
-          onClick={onLogout}
-          title="Sign Out"
-          className="p-2 sm:p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-red-400 transition-all active:scale-95 cursor-pointer border border-white/5"
-        >
-          <LogOut size={16} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setFeedbackOpen(true)}
+            title="Send Feedback"
+            className="p-2 sm:p-2.5 rounded-2xl bg-primary/10 hover:bg-primary/20 text-primary transition-all active:scale-95 cursor-pointer border border-primary/20 flex items-center gap-1.5 text-xs font-bold"
+          >
+            <MessageSquare size={14} />
+            <span className="hidden sm:inline">Feedback</span>
+          </button>
+
+          <button
+            onClick={onLogout}
+            title="Sign Out"
+            className="p-2 sm:p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-red-400 transition-all active:scale-95 cursor-pointer border border-white/5"
+          >
+            <LogOut size={16} />
+          </button>
+        </div>
       </header>
 
       {/* Main Scrollable Body */}
@@ -257,6 +270,13 @@ const ProfileView = ({ user, onLogout, onReplayArtist }) => {
           )}
         </div>
       </div>
+
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isOpen={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+        user={user}
+      />
     </div>
   );
 };

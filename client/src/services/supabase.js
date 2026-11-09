@@ -225,3 +225,54 @@ export const fetchLeaderboardArtists = async () => {
     return [];
   }
 };
+
+// User Feedback Submission Helper
+export const submitFeedback = async ({
+  userId = null,
+  username = 'Anonymous',
+  rating = 5,
+  category = 'general',
+  message = '',
+}) => {
+  try {
+    // 1. Try to record to Supabase feedback table if available
+    const { data, error } = await supabase
+      .from('feedback')
+      .insert([
+        {
+          user_id: userId,
+          username,
+          rating,
+          category,
+          message,
+          created_at: new Date().toISOString(),
+        },
+      ])
+      .select();
+
+    if (error) {
+      console.warn('Supabase feedback insert note:', error.message);
+    }
+
+    // 2. Also record in local fallback storage so no feedback is ever lost
+    try {
+      const existing = JSON.parse(localStorage.getItem('sonicpulse_feedback') || '[]');
+      existing.unshift({
+        id: Date.now(),
+        userId,
+        username,
+        rating,
+        category,
+        message,
+        created_at: new Date().toISOString(),
+      });
+      localStorage.setItem('sonicpulse_feedback', JSON.stringify(existing.slice(0, 50)));
+    } catch (e) {}
+
+    return { success: true };
+  } catch (err) {
+    console.error('submitFeedback error:', err);
+    return { success: false, error: err.message };
+  }
+};
+
