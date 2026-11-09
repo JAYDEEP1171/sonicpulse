@@ -47,9 +47,9 @@ const Leaderboard = ({ onPlayArtist }) => {
   const topChampion = entries.length > 0 ? entries[0] : null;
 
   return (
-    <div className="h-full w-full p-4 sm:p-5 flex flex-col space-y-3 sm:space-y-4 relative z-10 pt-6 sm:pt-8 overflow-hidden">
+    <div className="h-full w-full px-4 sm:px-6 pt-5 sm:pt-7 pb-2 flex flex-col space-y-3 sm:space-y-4 relative z-10 overflow-hidden box-border">
       {/* Header */}
-      <header className="flex justify-between items-center shrink-0">
+      <header className="flex justify-between items-center shrink-0 w-full">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-wider font-mono">
@@ -145,7 +145,7 @@ const Leaderboard = ({ onPlayArtist }) => {
       )}
 
       {/* Leaderboard Entries List */}
-      <div className="flex-1 overflow-y-auto hidden-scrollbar pb-24 space-y-2 pt-1">
+      <div className="flex-1 w-full overflow-y-auto hidden-scrollbar pb-24 space-y-2 pt-1 pr-0.5">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-3">
             <div className="w-7 h-7 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>

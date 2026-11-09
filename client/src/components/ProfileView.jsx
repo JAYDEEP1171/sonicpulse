@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, History, Trophy, Zap, Target, Clock, RotateCcw, LogOut, Music } from 'lucide-react';
+import { ShieldCheck, History, Trophy, Zap, Target, Clock, RotateCcw, LogOut, Music, TrendingUp, Sparkles, Award } from 'lucide-react';
 import { fetchUserHistory } from '../services/supabase';
 
 const ProfileView = ({ user, onLogout, onReplayArtist }) => {
@@ -50,9 +50,9 @@ const ProfileView = ({ user, onLogout, onReplayArtist }) => {
   };
 
   return (
-    <div className="h-full w-full p-4 sm:p-5 flex flex-col space-y-4 relative z-10 pt-5 sm:pt-6 overflow-hidden">
+    <div className="h-full w-full px-4 sm:px-6 pt-5 sm:pt-7 pb-2 flex flex-col space-y-4 relative z-10 overflow-hidden box-border">
       {/* Top Header */}
-      <header className="flex justify-between items-center shrink-0">
+      <header className="flex justify-between items-center shrink-0 w-full">
         <div className="space-y-0.5">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-wider font-mono">
             <ShieldCheck size={12} />
@@ -66,17 +66,17 @@ const ProfileView = ({ user, onLogout, onReplayArtist }) => {
         <button
           onClick={onLogout}
           title="Sign Out"
-          className="p-2 sm:p-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-red-400 transition-all active:scale-95 cursor-pointer"
+          className="p-2 sm:p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-red-400 transition-all active:scale-95 cursor-pointer border border-white/5"
         >
           <LogOut size={16} />
         </button>
       </header>
 
       {/* Main Scrollable Body */}
-      <div className="flex-1 overflow-y-auto hidden-scrollbar pb-24 space-y-4">
-        {/* User Identity Banner */}
-        <div className="flex items-center gap-4 p-4 rounded-3xl bg-[#121212] border border-white/5 shadow-xl">
-          <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-full border-2 border-primary/40 p-1 shrink-0">
+      <div className="flex-1 w-full overflow-y-auto hidden-scrollbar pb-24 space-y-4 pr-0.5">
+        {/* User Identity Banner (Inspired by Clean Apple / Spotify Hero Cards) */}
+        <div className="flex items-center gap-4 p-4 sm:p-5 rounded-[2rem] bg-gradient-to-br from-[#1A1A22] via-[#121216] to-[#0D0D11] border border-white/10 shadow-2xl relative overflow-hidden">
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-primary/50 p-1 shrink-0 shadow-lg">
             {user.avatar_url ? (
               <img
                 src={user.avatar_url}
@@ -84,62 +84,105 @@ const ProfileView = ({ user, onLogout, onReplayArtist }) => {
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
-              <div className="w-full h-full rounded-full bg-surface-container-high flex items-center justify-center text-2xl font-black text-white">
+              <div className="w-full h-full rounded-full bg-white/10 flex items-center justify-center text-2xl font-black text-white">
                 {user.username ? user.username[0]?.toUpperCase() : 'U'}
               </div>
             )}
-            <div className="absolute -bottom-1 -right-1 bg-primary text-surface p-1 rounded-full shadow-md">
-              <ShieldCheck size={12} strokeWidth={3} />
+            <div className="absolute -bottom-1 -right-1 bg-primary text-black p-1 rounded-full shadow-md font-black">
+              <ShieldCheck size={13} strokeWidth={2.5} />
             </div>
           </div>
 
-          <div className="space-y-0.5 overflow-hidden">
-            <h3 className="font-display font-black text-xl text-white truncate">
-              {user.name}
-            </h3>
-            <p className="font-mono text-xs font-bold text-primary">
+          <div className="space-y-1 overflow-hidden">
+            <div className="flex items-center gap-2">
+              <h3 className="font-display font-black text-xl sm:text-2xl text-white truncate">
+                {user.name}
+              </h3>
+            </div>
+            <p className="font-mono text-xs font-bold text-primary truncate">
               @{user.username || 'user'}
             </p>
-            <p className="text-[11px] text-white/50 font-medium">
+            <span className="inline-block px-2.5 py-0.5 rounded-full bg-white/10 text-white/80 font-mono text-[9px] uppercase tracking-wider font-bold">
               {user.role || 'Verified Superfan'}
-            </p>
+            </span>
           </div>
         </div>
 
-        {/* Lifetime Performance Grid */}
-        <div className="grid grid-cols-4 gap-2">
-          <div className="p-3 rounded-2xl bg-[#121212] border border-white/5 flex flex-col items-center justify-center text-center">
-            <Trophy size={14} className="text-primary mb-1" />
-            <span className="text-base font-display font-black text-white">{bestScore}</span>
-            <span className="text-[9px] font-mono text-white/50 uppercase">Peak Score</span>
+        {/* 2x2 Metric Cards (Directly matching your uploaded reference images: Conan Gray stats style) */}
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+          {/* Card 1: Peak Score */}
+          <div className="p-4 rounded-[1.75rem] bg-[#14151C] border border-white/10 shadow-lg flex flex-col justify-between space-y-2 hover:border-primary/30 transition-all">
+            <div className="flex items-center justify-between text-white/60">
+              <span className="text-[11px] font-mono uppercase tracking-wider font-bold">Peak Score</span>
+              <Trophy size={14} className="text-[#FBBF24]" />
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-display font-black text-white tracking-tight">
+                {bestScore.toLocaleString()}
+              </div>
+              <div className="flex items-center gap-1 text-[10px] font-mono text-primary font-bold mt-0.5">
+                <TrendingUp size={11} />
+                <span>High Performance</span>
+              </div>
+            </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-[#121212] border border-white/5 flex flex-col items-center justify-center text-center">
-            <History size={14} className="text-[#88EBFF] mb-1" />
-            <span className="text-base font-display font-black text-white">{totalGames}</span>
-            <span className="text-[9px] font-mono text-white/50 uppercase">Quizzes</span>
+          {/* Card 2: Total Quizzes */}
+          <div className="p-4 rounded-[1.75rem] bg-[#14151C] border border-white/10 shadow-lg flex flex-col justify-between space-y-2 hover:border-primary/30 transition-all">
+            <div className="flex items-center justify-between text-white/60">
+              <span className="text-[11px] font-mono uppercase tracking-wider font-bold">Quizzes Played</span>
+              <History size={14} className="text-[#38BDF8]" />
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-display font-black text-white tracking-tight">
+                {totalGames}
+              </div>
+              <span className="text-[10px] font-mono text-white/50 block mt-0.5">
+                Lifetime sessions
+              </span>
+            </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-[#121212] border border-white/5 flex flex-col items-center justify-center text-center">
-            <Target size={14} className="text-[#FBBF24] mb-1" />
-            <span className="text-base font-display font-black text-white">{avgAccuracy}%</span>
-            <span className="text-[9px] font-mono text-white/50 uppercase">Accuracy</span>
+          {/* Card 3: Accuracy */}
+          <div className="p-4 rounded-[1.75rem] bg-[#14151C] border border-white/10 shadow-lg flex flex-col justify-between space-y-2 hover:border-primary/30 transition-all">
+            <div className="flex items-center justify-between text-white/60">
+              <span className="text-[11px] font-mono uppercase tracking-wider font-bold">Accuracy</span>
+              <Target size={14} className="text-emerald-400" />
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-display font-black text-white tracking-tight">
+                {avgAccuracy}%
+              </div>
+              <span className="text-[10px] font-mono text-emerald-400 font-bold block mt-0.5">
+                {avgAccuracy >= 80 ? 'Elite precision' : 'Average rate'}
+              </span>
+            </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-[#121212] border border-white/5 flex flex-col items-center justify-center text-center">
-            <Clock size={14} className="text-purple-400 mb-1" />
-            <span className="text-base font-display font-black text-white">{avgSpeed}s</span>
-            <span className="text-[9px] font-mono text-white/50 uppercase">Avg Reflex</span>
+          {/* Card 4: Reflex Speed */}
+          <div className="p-4 rounded-[1.75rem] bg-[#14151C] border border-white/10 shadow-lg flex flex-col justify-between space-y-2 hover:border-primary/30 transition-all">
+            <div className="flex items-center justify-between text-white/60">
+              <span className="text-[11px] font-mono uppercase tracking-wider font-bold">Reflex Speed</span>
+              <Clock size={14} className="text-purple-400" />
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-display font-black text-white tracking-tight">
+                {avgSpeed}s
+              </div>
+              <span className="text-[10px] font-mono text-white/50 block mt-0.5">
+                Average drop time
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Full Session History Feed */}
         <div className="space-y-2.5 pt-1">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-1.5">
-              <History size={14} className="text-primary" />
+              <Sparkles size={14} className="text-primary" />
               <h3 className="text-xs font-black uppercase tracking-[0.15em] text-white font-mono">
-                Quiz Session History ({history.length})
+                Recent Challenges ({history.length})
               </h3>
             </div>
           </div>
@@ -149,7 +192,7 @@ const ProfileView = ({ user, onLogout, onReplayArtist }) => {
               SYNCING QUIZ SESSIONS...
             </div>
           ) : history.length === 0 ? (
-            <div className="p-6 rounded-2xl bg-[#121212] border border-white/5 text-center space-y-2">
+            <div className="p-6 rounded-[1.75rem] bg-[#14151C] border border-white/10 text-center space-y-2">
               <Music size={24} className="text-white/20 mx-auto" />
               <p className="text-xs font-medium text-white/60">No quiz sessions recorded yet.</p>
               <p className="text-[10px] text-white/40">
@@ -161,39 +204,47 @@ const ProfileView = ({ user, onLogout, onReplayArtist }) => {
               {history.map((item, idx) => (
                 <div
                   key={item.id || idx}
-                  className="p-3.5 rounded-2xl bg-[#121212] border border-white/5 hover:border-white/10 transition-all flex items-center justify-between group"
+                  className="p-3.5 rounded-2xl bg-[#14151C] border border-white/5 hover:border-white/15 transition-all flex items-center justify-between group shadow-sm"
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-display font-bold text-sm text-white group-hover:text-primary transition-colors">
-                        {item.artist_name}
-                      </span>
-                      {item.tier && (
-                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-primary font-mono">
-                          {item.tier}
-                        </span>
-                      )}
+                  <div className="flex items-center space-x-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shrink-0">
+                      <Music size={18} />
                     </div>
-                    <div className="flex items-center gap-2 text-[10px] font-mono text-white/50">
-                      <span>{formatDate(item.created_at)}</span>
-                      <span>•</span>
-                      <span>{item.accuracy}% Acc</span>
-                      <span>•</span>
-                      <span>{item.avg_speed}s Speed</span>
+
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="font-display font-black text-xs sm:text-sm text-white truncate">
+                          {item.artist_name || 'Mystery Artist'}
+                        </h4>
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-white/80 shrink-0">
+                          {item.tier || 'CHALLENGER'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] font-mono text-white/50 mt-0.5">
+                        <span>{item.accuracy}% acc</span>
+                        <span>•</span>
+                        <span>{item.avg_speed}s speed</span>
+                        <span>•</span>
+                        <span>{formatDate(item.created_at)}</span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="text-right flex flex-col items-end">
-                    <span className="font-display font-black text-sm text-primary">
-                      {item.score?.toLocaleString()} pts
-                    </span>
+                  <div className="flex items-center space-x-2 shrink-0">
+                    <div className="text-right">
+                      <span className="block font-display font-black text-xs sm:text-sm text-primary">
+                        {item.score?.toLocaleString()}
+                      </span>
+                      <span className="text-[8px] font-mono text-white/40 uppercase">PTS</span>
+                    </div>
+
                     {onReplayArtist && (
                       <button
                         onClick={() => onReplayArtist(item.artist_name)}
-                        className="text-[9px] font-mono text-white/40 hover:text-white uppercase font-bold flex items-center gap-1 mt-0.5 cursor-pointer"
+                        title="Replay this test"
+                        className="p-2 rounded-xl bg-white/5 hover:bg-primary/20 text-white/70 hover:text-primary transition-colors cursor-pointer"
                       >
-                        <RotateCcw size={10} />
-                        <span>Replay</span>
+                        <RotateCcw size={13} />
                       </button>
                     )}
                   </div>
@@ -201,17 +252,6 @@ const ProfileView = ({ user, onLogout, onReplayArtist }) => {
               ))}
             </div>
           )}
-        </div>
-
-        {/* Sign Out CTA */}
-        <div className="pt-2">
-          <button
-            onClick={onLogout}
-            className="w-full py-3 px-5 rounded-2xl bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-xs uppercase tracking-wider border border-red-500/20 flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
-          >
-            <LogOut size={14} />
-            <span>Sign Out</span>
-          </button>
         </div>
       </div>
     </div>

@@ -115,9 +115,14 @@ function MainApp() {
   }
 
   return (
-    <div className="min-h-screen w-full flex justify-center items-center bg-[#050505] overflow-hidden font-sans">
-      {/* 450px Max Width Desktop Frame -> 9:16 mobile viewport on desktop */}
-      <div className="w-full max-w-[450px] h-[100dvh] md:h-[88dvh] md:min-h-[800px] md:rounded-[2.5rem] bg-surface md:border-[6px] md:border-[#1A1A1A] overflow-hidden relative shadow-[0_0_80px_rgba(0,0,0,0.85)] flex flex-col z-10">
+    <div className="min-h-screen w-full flex justify-center items-center bg-[#070709] overflow-hidden font-sans p-0 sm:p-2 md:p-4">
+      {/* 
+        Responsive viewport shell:
+        - Full viewport on mobile
+        - Expands cleanly for foldables (e.g. Z Fold passport ratio up to 680px)
+        - Constrained max-w-[540px] or adaptive on larger screens
+      */}
+      <div className="w-full h-[100dvh] sm:h-[94dvh] sm:max-w-[520px] md:max-w-[560px] lg:max-w-[580px] sm:rounded-[2.5rem] bg-surface sm:border-[4px] sm:border-white/10 overflow-hidden relative shadow-[0_0_80px_rgba(0,0,0,0.9)] flex flex-col z-10 transition-all">
         {/* Main View Router */}
         <div className="flex-1 overflow-y-auto hidden-scrollbar relative z-0">
           {needsOnboarding && pendingGoogleUser ? (

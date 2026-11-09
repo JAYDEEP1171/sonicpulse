@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Sparkles, LogOut, X, Zap, Play, Flame, Radio, Disc3, ShieldCheck } from 'lucide-react';
+import { Search, Sparkles, LogOut, X, Zap, Play, Flame, Radio, Disc3, ShieldCheck, Layers } from 'lucide-react';
 import { musicService } from '../services/api';
+import DeckCardStack from './DeckCardStack';
 
 const FEATURED_ARTISTS = [
   {
@@ -279,9 +280,15 @@ const Dashboard = ({ user, onLogout, onSelectArtist }) => {
             </div>
           </div>
         ) : (
-          /* Normal View: Visual Card Banner (Sandra Style) + Sticky Card Stack */
+          /* Normal View: 3D Gesture Card Stack + Challenge Banner */
           <>
-            {/* 1. Visual Card Advertisement Banner (Inspired by Sandra Daily Challenge Card) */}
+            {/* 1. iOS / Android Multitasker 3D Gesture Stack */}
+            <DeckCardStack
+              items={FEATURED_ARTISTS}
+              onSelectArtist={handleStartFeaturedQuiz}
+            />
+
+            {/* 2. Visual Card Advertisement Banner (Inspired by Sandra Daily Challenge Card) */}
             <div
               onClick={() => handleStartFeaturedQuiz(FEATURED_ARTISTS[0])}
               className="relative overflow-hidden rounded-[2rem] p-5 bg-gradient-to-br from-[#7C3AED]/35 via-[#4C1D95]/40 to-[#0F0F13] border border-purple-500/30 shadow-[0_15px_40px_rgba(124,58,237,0.25)] cursor-pointer group active:scale-[0.98] transition-all"

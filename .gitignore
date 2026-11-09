@@ -29,3 +29,11 @@ Thumbs.db
 .idea/
 *.swp
 *.log
+
+# BMad and local AI development tools (not needed in production deployment)
+_bmad/
+_bmad-output/
+.agentic/
+.agents/
+AGENTS.md
+

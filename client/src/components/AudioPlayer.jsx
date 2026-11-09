@@ -1,5 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, Pause, Volume2, VolumeX, Activity } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Sparkles } from 'lucide-react';
+
+const WAVEFORM_HEIGHTS = [
+  35, 60, 40, 85, 95, 70, 50, 80, 100, 65, 45, 90, 75, 40, 60, 85, 50, 70, 95, 40, 60, 80, 45, 65,
+];
 
 const AudioPlayer = ({
   src,
@@ -11,31 +15,16 @@ const AudioPlayer = ({
 }) => {
   const audioRef = useRef(null);
   const [muted, setMuted] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(true);
   const [isProducingSound, setIsProducingSound] = useState(false);
   const [needsExplicitTap, setNeedsExplicitTap] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(30);
 
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
   }, [volume]);
-
-  // Handle global touch/click to unlock mobile audio context
-  useEffect(() => {
-    const unlockAudio = () => {
-      setHasInteracted(true);
-      if (audioRef.current && isPlaying && !isProducingSound) {
-        audioRef.current.play().catch(() => {});
-      }
-    };
-    window.addEventListener('click', unlockAudio, { passive: true });
-    window.addEventListener('touchstart', unlockAudio, { passive: true });
-    return () => {
-      window.removeEventListener('click', unlockAudio);
-      window.removeEventListener('touchstart', unlockAudio);
-    };
-  }, [isPlaying, isProducingSound]);
 
   // Audio Play / Pause control
   useEffect(() => {
@@ -62,6 +51,15 @@ const AudioPlayer = ({
     }
   }, [isPlaying, src]);
 
+  const handleTimeUpdate = () => {
+    if (audioRef.current && audioRef.current.duration) {
+      const current = audioRef.current.currentTime;
+      const total = audioRef.current.duration || 30;
+      setProgress((current / total) * 100);
+      setDuration(Math.round(total));
+    }
+  };
+
   const handleManualPlayTap = () => {
     if (audioRef.current) {
       audioRef.current
@@ -79,8 +77,10 @@ const AudioPlayer = ({
 
   return (
     <div
-      className={`w-full flex items-center justify-between bg-surface-container-highest/90 backdrop-blur-2xl rounded-2xl p-3.5 border border-white/5 shadow-2xl transition-all duration-500 z-20 ${
-        isProducingSound ? 'shadow-[0_0_30px_rgba(114,254,143,0.2)] border-primary/30' : ''
+      className={`w-full flex flex-col space-y-2 bg-[#121318]/90 backdrop-blur-2xl rounded-[1.75rem] p-3.5 border transition-all duration-300 shadow-xl ${
+        isProducingSound
+          ? 'border-primary/40 shadow-[0_10px_30px_rgba(114,254,143,0.15)]'
+          : 'border-white/10'
       }`}
     >
       <audio
@@ -88,6 +88,7 @@ const AudioPlayer = ({
         src={src}
         onEnded={onEnded}
         onError={onError}
+        onTimeUpdate={handleTimeUpdate}
         onPlay={() => {
           setIsProducingSound(true);
           setNeedsExplicitTap(false);
@@ -97,61 +98,76 @@ const AudioPlayer = ({
         preload="auto"
       />
 
-      <div className="flex items-center space-x-3.5">
-        {/* Play/Sound Indicator */}
-        <div
-          onClick={needsExplicitTap ? handleManualPlayTap : undefined}
-          className={`relative w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-            needsExplicitTap
-              ? 'bg-primary text-surface cursor-pointer animate-pulse scale-105 shadow-[0_0_20px_rgba(114,254,143,0.5)]'
-              : isProducingSound
-              ? 'bg-primary text-surface shadow-[0_0_20px_rgba(114,254,143,0.3)]'
-              : 'bg-surface-container text-on-surface-variant'
-          }`}
-        >
-          {isProducingSound && (
-            <div className="absolute inset-0 rounded-2xl animate-ping opacity-25 bg-primary"></div>
-          )}
-          {needsExplicitTap ? (
-            <Play size={20} className="fill-surface ml-0.5" />
-          ) : isProducingSound ? (
-            <Activity size={20} className="animate-pulse" />
-          ) : (
-            <Play size={20} className="ml-0.5 opacity-60" />
-          )}
+      <div className="flex items-center justify-between">
+        {/* Play Action Pill & Status */}
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={needsExplicitTap ? handleManualPlayTap : undefined}
+            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+              needsExplicitTap
+                ? 'bg-primary text-black animate-pulse shadow-md scale-105'
+                : isProducingSound
+                ? 'bg-primary text-black shadow-md'
+                : 'bg-white/10 text-white/70'
+            }`}
+          >
+            {needsExplicitTap ? (
+              <Play size={15} fill="currentColor" className="ml-0.5" />
+            ) : isProducingSound ? (
+              <Pause size={15} fill="currentColor" />
+            ) : (
+              <Play size={15} fill="currentColor" className="ml-0.5" />
+            )}
+          </button>
+
+          <div>
+            <span className="text-[9px] font-mono uppercase tracking-widest text-primary font-bold block">
+              {needsExplicitTap ? 'Tap to Play' : isProducingSound ? 'Live Playing' : 'Preview Stream'}
+            </span>
+            <span className="text-xs font-semibold text-white">
+              {needsExplicitTap ? 'Unmute Audio' : '30s Audio Drop'}
+            </span>
+          </div>
         </div>
 
-        <div className="flex flex-col">
-          <span className="text-[9px] text-on-surface-variant uppercase tracking-[0.2em] font-bold">
-            {needsExplicitTap ? 'Action Required' : 'Audio Stream'}
-          </span>
-          <span className="text-xs text-white font-medium flex items-center gap-2">
-            {isProducingSound ? (
-              <span className="flex items-center gap-[3px] h-3">
-                <span className="w-1 h-full bg-primary animate-[bounce_0.8s_infinite] rounded-sm"></span>
-                <span className="w-1 h-2/3 bg-primary animate-[bounce_1.1s_infinite] rounded-sm"></span>
-                <span className="w-1 h-4/5 bg-primary animate-[bounce_0.6s_infinite] rounded-sm"></span>
-                <span className="w-1 h-full bg-primary animate-[bounce_0.9s_infinite] rounded-sm"></span>
-              </span>
-            ) : null}
-            <span className="font-display font-medium tracking-tight">
-              {needsExplicitTap
-                ? 'Tap here to enable sound'
-                : isProducingSound
-                ? '30s Audio Stream Live'
-                : 'Buffering track...'}
-            </span>
-          </span>
+        {/* Volume & Audio Controls */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setMuted(!muted)}
+            title={muted ? 'Unmute' : 'Mute'}
+            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors"
+          >
+            {muted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+          </button>
         </div>
       </div>
 
-      <button
-        onClick={() => setMuted(!muted)}
-        title={muted ? 'Unmute' : 'Mute'}
-        className="p-2.5 text-on-surface-variant hover:text-white hover:bg-surface-container rounded-xl transition-colors active:scale-95 cursor-pointer"
-      >
-        {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-      </button>
+      {/* Pill Waveform Visualizer */}
+      <div className="pt-1 px-1 flex items-center gap-1 h-7">
+        {WAVEFORM_HEIGHTS.map((heightPercent, idx) => {
+          const barProgressThreshold = (idx / WAVEFORM_HEIGHTS.length) * 100;
+          const isPassed = progress >= barProgressThreshold;
+
+          return (
+            <div
+              key={idx}
+              className="flex-1 flex items-center justify-center h-full"
+            >
+              <div
+                style={{
+                  height: `${heightPercent}%`,
+                  transition: 'height 0.25s ease, background-color 0.2s ease',
+                }}
+                className={`w-full max-w-[4px] rounded-full ${
+                  isPassed
+                    ? 'bg-primary shadow-[0_0_8px_rgba(114,254,143,0.5)]'
+                    : 'bg-white/15'
+                } ${isProducingSound ? 'animate-pulse' : ''}`}
+              />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
