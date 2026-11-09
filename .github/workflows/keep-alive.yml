@@ -1,0 +1,22 @@
+name: Keep Render Backend Alive
+
+on:
+  schedule:
+    # Runs every 14 minutes (Render spins down after 15 minutes of inactivity)
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  ping-render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping SonicPulse Render Backend
+        run: |
+          echo "Sending keep-alive ping to Render backend..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://sonicpulse-backend-live.onrender.com/api/health)
+          echo "HTTP Response Code: $RESPONSE"
+          if [ "$RESPONSE" -eq 200 ] || [ "$RESPONSE" -eq 301 ] || [ "$RESPONSE" -eq 302 ]; then
+            echo "Render backend is warm and healthy!"
+          else
+            echo "Ping sent (Status: $RESPONSE). Service will spin up if sleeping."
+          fi

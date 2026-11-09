@@ -140,4 +140,11 @@ export const musicService = {
   },
 };
 
+// Immediate silent warm-up ping on client load so cold backend wakes up early
+if (typeof window !== 'undefined') {
+  setTimeout(() => {
+    api.get('/api/health').catch(() => {});
+  }, 100);
+}
+
 export default api;
