@@ -73,7 +73,10 @@ const ProfileView = ({ user, onLogout, onReplayArtist }) => {
       </header>
 
       {/* Main Scrollable Body */}
-      <div className="flex-1 w-full overflow-y-auto hidden-scrollbar pb-24 space-y-4 pr-0.5">
+      <div
+        className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain pb-32 space-y-4 pr-0.5"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
         {/* User Identity Banner (Inspired by Clean Apple / Spotify Hero Cards) */}
         <div className="flex items-center gap-4 p-4 sm:p-5 rounded-[2rem] bg-gradient-to-br from-[#1A1A22] via-[#121216] to-[#0D0D11] border border-white/10 shadow-2xl relative overflow-hidden">
           <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-primary/50 p-1 shrink-0 shadow-lg">

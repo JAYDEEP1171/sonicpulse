@@ -40,7 +40,8 @@ const ExploreView = ({ onSelectGenre }) => {
       {/* Sticky Card Stack Scroll Area (Inspired by Oaksun Dribbble Interaction) */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-y-auto hidden-scrollbar px-3 sm:px-4 pb-28 pt-2 space-y-4 select-none"
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 sm:px-4 pb-32 pt-2 space-y-4"
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {CURATED_GENRES.map((genre, index) => {
           // Staggered sticky top offset so each stacked card tab header stays neatly visible

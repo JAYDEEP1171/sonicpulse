@@ -220,7 +220,8 @@ const Dashboard = ({ user, onLogout, onSelectArtist }) => {
       {/* Main Body */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-y-auto hidden-scrollbar px-3 sm:px-4 pb-28 pt-1 space-y-4"
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 sm:px-4 pb-32 pt-1 space-y-4"
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {query ? (
           /* Search Results Grid */

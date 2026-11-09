@@ -145,7 +145,10 @@ const Leaderboard = ({ onPlayArtist }) => {
       )}
 
       {/* Leaderboard Entries List */}
-      <div className="flex-1 w-full overflow-y-auto hidden-scrollbar pb-24 space-y-2 pt-1 pr-0.5">
+      <div
+        className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain pb-32 space-y-2 pt-1 pr-0.5"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-3">
             <div className="w-7 h-7 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
