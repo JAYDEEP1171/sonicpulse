@@ -14,9 +14,9 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #0E0E0E; /* absolute void */
+  background-color: #070709;
   min-height: 100vh;
-  display: flex;
-  place-items: center;
-  justify-content: center;
+  min-height: 100dvh;
+  width: 100%;
+  overflow-x: hidden;
 }
