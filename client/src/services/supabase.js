@@ -8,6 +8,11 @@ const SUPABASE_ANON_KEY =
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Guest sessions use non-UUID IDs (e.g. "guest-a1b2"); Postgres uuid columns require a valid UUID or null.
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const normalizeUserId = (userId) =>
+  typeof userId === 'string' && UUID_REGEX.test(userId) ? userId : null;
+
 // Auth Helpers
 export const signInWithGoogle = async () => {
   const redirectUrl =
@@ -101,11 +106,16 @@ export const recordGameScore = async ({
     );
   } catch (e) {}
 
-  // 2. Persist to Supabase if available
+  // 2. Persist to Supabase if authenticated (leaderboard.user_id requires a valid UUID)
+  const safeUserId = normalizeUserId(userId);
+  if (!safeUserId) {
+    return null;
+  }
+
   try {
     const { data, error } = await supabase.from('leaderboard').insert([
       {
-        user_id: userId,
+        user_id: safeUserId,
         username,
         artist_name: artistName,
         score,
@@ -172,14 +182,15 @@ export const fetchLeaderboard = async (artistFilter = null, limit = 35) => {
 export const fetchUserHistory = async (userId, username) => {
   try {
     let remoteData = [];
-    if (userId || username) {
+    const safeUserId = normalizeUserId(userId);
+    if (safeUserId || username) {
       let query = supabase
         .from('leaderboard')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (userId) {
-        query = query.eq('user_id', userId);
+      if (safeUserId) {
+        query = query.eq('user_id', safeUserId);
       } else if (username) {
         query = query.eq('username', username);
       }
@@ -235,12 +246,13 @@ export const submitFeedback = async ({
   message = '',
 }) => {
   try {
-    // 1. Try to record to Supabase feedback table if available
+    // 1. Try to record to Supabase feedback table if available (pass null for guest non-UUID ids)
+    const safeUserId = normalizeUserId(userId);
     const { data, error } = await supabase
       .from('feedback')
       .insert([
         {
-          user_id: userId,
+          user_id: safeUserId,
           username,
           rating,
           category,
