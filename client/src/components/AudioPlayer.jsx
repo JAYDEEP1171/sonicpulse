@@ -77,8 +77,11 @@ const AudioPlayer = ({
 
   return (
     <div
+      onClick={needsExplicitTap ? handleManualPlayTap : undefined}
       className={`w-full flex flex-col space-y-2 bg-[#121318]/90 backdrop-blur-2xl rounded-[1.75rem] p-3.5 border transition-all duration-300 shadow-xl ${
-        isProducingSound
+        needsExplicitTap
+          ? 'cursor-pointer border-primary/60 shadow-[0_10px_30px_rgba(114,254,143,0.25)]'
+          : isProducingSound
           ? 'border-primary/40 shadow-[0_10px_30px_rgba(114,254,143,0.15)]'
           : 'border-white/10'
       }`}
@@ -101,8 +104,7 @@ const AudioPlayer = ({
       <div className="flex items-center justify-between">
         {/* Play Action Pill & Status */}
         <div className="flex items-center gap-2.5">
-          <button
-            onClick={needsExplicitTap ? handleManualPlayTap : undefined}
+          <div
             className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
               needsExplicitTap
                 ? 'bg-primary text-black animate-pulse shadow-md scale-105'
@@ -118,14 +120,14 @@ const AudioPlayer = ({
             ) : (
               <Play size={15} fill="currentColor" className="ml-0.5" />
             )}
-          </button>
+          </div>
 
           <div>
             <span className="text-[9px] font-mono uppercase tracking-widest text-primary font-bold block">
-              {needsExplicitTap ? 'Tap to Play' : isProducingSound ? 'Live Playing' : 'Preview Stream'}
+              {needsExplicitTap ? 'Action Required' : isProducingSound ? 'Live Playing' : 'Preview Stream'}
             </span>
             <span className="text-xs font-semibold text-white">
-              {needsExplicitTap ? 'Unmute Audio' : '30s Audio Drop'}
+              {needsExplicitTap ? 'Tap anywhere here to enable sound' : '30s Audio Drop'}
             </span>
           </div>
         </div>
@@ -133,7 +135,10 @@ const AudioPlayer = ({
         {/* Volume & Audio Controls */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setMuted(!muted)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setMuted(!muted);
+            }}
             title={muted ? 'Unmute' : 'Mute'}
             className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors"
           >

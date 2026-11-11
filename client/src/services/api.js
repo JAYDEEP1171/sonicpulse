@@ -100,13 +100,6 @@ export const CURATED_GENRES = [
   },
 ];
 
-export const authService = {
-  login: async (username, password) => {
-    const res = await api.post('/api/login', { username, password });
-    return res.data;
-  },
-};
-
 export const musicService = {
   searchArtists: async (query) => {
     const res = await api.get('/api/search', { params: { q: query } });

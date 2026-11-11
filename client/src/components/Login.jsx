@@ -19,10 +19,11 @@ const Login = ({ onGuestLogin }) => {
   };
 
   const handleGuest = () => {
+    const suffix = Math.random().toString(36).substring(2, 6).toUpperCase();
     onGuestLogin({
-      id: 'guest-' + Math.random().toString(36).substring(2, 8),
-      name: 'SonicRider',
-      username: 'SonicRider',
+      id: 'guest-' + suffix.toLowerCase(),
+      name: `SonicRider-${suffix}`,
+      username: `SonicRider-${suffix}`,
       avatar_url: null,
       role: 'Guest Racer',
     });
@@ -69,18 +70,28 @@ const Login = ({ onGuestLogin }) => {
           </div>
         )}
 
-        {/* Primary 1-Click Google Sign In */}
+        {/* Primary Zero-Friction Guest Play */}
+        <button
+          onClick={handleGuest}
+          className="w-full py-4 px-6 rounded-2xl bg-primary hover:bg-[#86febc] text-surface font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(114,254,143,0.35)] hover:shadow-[0_0_40px_rgba(114,254,143,0.5)] transition-all active:scale-95 cursor-pointer"
+        >
+          <Zap size={16} className="fill-surface" />
+          <span>Play Now (No Sign-Up)</span>
+          <ArrowRight size={15} />
+        </button>
+
+        {/* Secondary 1-Click Google Sign In */}
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full py-4 px-6 rounded-2xl bg-white hover:bg-gray-100 text-black font-black text-sm tracking-wide flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+          className="w-full py-3.5 px-6 rounded-2xl bg-white hover:bg-gray-100 text-black font-bold text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2.5 shadow-lg transition-all active:scale-95 cursor-pointer disabled:opacity-50"
         >
           {loading ? (
             <div className="w-5 h-5 rounded-full border-2 border-black border-t-transparent animate-spin"></div>
           ) : (
             <>
               {/* Google G Logo SVG */}
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -98,18 +109,9 @@ const Login = ({ onGuestLogin }) => {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                 />
               </svg>
-              <span>Continue with Google</span>
+              <span>Continue with Google (Save Global Rank)</span>
             </>
           )}
-        </button>
-
-        {/* Secondary Guest / Instant Play */}
-        <button
-          onClick={handleGuest}
-          className="w-full py-3.5 px-6 rounded-2xl bg-surface-container hover:bg-surface-container-high border border-white/5 text-on-surface-variant hover:text-white font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
-        >
-          <span>Instant Test as Guest</span>
-          <ArrowRight size={14} />
         </button>
 
         <p className="text-[10px] text-on-surface-variant/40 tracking-wider pt-1">

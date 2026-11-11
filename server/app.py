@@ -12,9 +12,6 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 music_client = MusicClient()
 
-ADMIN_USER = os.getenv("ADMIN_USER", "admin")
-ADMIN_PASS = os.getenv("ADMIN_PASS", "pass123")
-
 @app.route('/', methods=['GET'])
 def root():
     return jsonify({
@@ -23,7 +20,6 @@ def root():
         "version": "2.0.0",
         "endpoints": [
             "/api/health",
-            "/api/login",
             "/api/search?q=<artist>",
             "/api/artist/<id>/tracks"
         ]
@@ -36,24 +32,6 @@ def health_check():
         "message": "SonicPulse Backend Online",
         "audio_sources": ["Deezer (Primary)", "iTunes (Fallback)"]
     }), 200
-
-@app.route('/api/login', methods=['POST'])
-def login():
-    data = request.json or {}
-    username = data.get('username')
-    password = data.get('password')
-
-    if username == ADMIN_USER and password == ADMIN_PASS:
-        return jsonify({
-            "success": True,
-            "user": {
-                "name": "Jaydeep",
-                "role": "Developer / Tester",
-                "id": "SP-001"
-            }
-        }), 200
-    
-    return jsonify({"success": False, "message": "Invalid credentials. Use admin / pass123"}), 401
 
 @app.route('/api/search', methods=['GET'])
 def search_artists():
