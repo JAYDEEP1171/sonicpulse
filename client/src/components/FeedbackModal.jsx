@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Star, Send, X, CheckCircle, Sparkles, Heart } from 'lucide-react';
+import { MessageSquare, Star, Send, X, CheckCircle } from 'lucide-react';
 import { submitFeedback } from '../services/supabase';
 
 const CATEGORIES = [
@@ -17,7 +18,7 @@ export default function FeedbackModal({ isOpen, onClose, user, defaultCategory =
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  if (!isOpen) return null;
+  if (typeof document === 'undefined') return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,16 +42,21 @@ export default function FeedbackModal({ isOpen, onClose, user, defaultCategory =
     }, 1800);
   };
 
-  return (
+  return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md">
-        <motion.div
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 100 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-          className="w-full sm:max-w-md bg-[#13141B] border border-white/10 rounded-t-[2.5rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+      {isOpen && (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
         >
+          <motion.div
+            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.94, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.94, y: 16 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+            className="w-full max-w-md bg-[#13141B] border border-white/10 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl space-y-4 max-h-[85dvh] overflow-y-auto overscroll-contain"
+          >
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -165,8 +171,10 @@ export default function FeedbackModal({ isOpen, onClose, user, defaultCategory =
               </button>
             </form>
           )}
-        </motion.div>
-      </div>
-    </AnimatePresence>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
   );
 }
